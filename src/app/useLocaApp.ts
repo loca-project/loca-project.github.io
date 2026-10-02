@@ -133,6 +133,7 @@ export function useLocaApp() {
    * 投稿タブの間だけ、入力を保ったままピンの位置を決める・動かす。
    * マーカー・撮影リクエストを選んでいるときは、マーカー以外のクリックで選択を解き、サイドメニューを検索の最初に戻す
    * （ピンのクリックは pinLayer が止めるので、ここには地図の地面のクリックだけが届く）。
+   * 投稿タブ以外では、地図の地面を押したらサイドメニューを閉じる（T108。投稿タブは場所を選ぶのでフォームを開いたままにする）。
    */
   const hasSelection = pickedMarker !== null || pickedRequest !== null;
   const handleMapClick = useCallback(
@@ -143,11 +144,9 @@ export function useLocaApp() {
         setForm((prev) => ({ ...prev, lat: pos.lat.toFixed(6), lng: pos.lng.toFixed(6) }));
         return;
       }
-      if (hasSelection) {
-        resetToSearch();
-        return;
-      }
-      services.map.closeInfoWindow();
+      if (hasSelection) resetToSearch();
+      else services.map.closeInfoWindow();
+      setSidebarOpen(false);
     },
     [drawing, tab, hasSelection, resetToSearch, services.map],
   );

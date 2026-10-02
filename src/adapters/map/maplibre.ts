@@ -120,6 +120,8 @@ export class MapLibreAdapter implements MapPort {
     }
 
     map.addControl(new lib.NavigationControl({ showCompass: false }), 'bottom-right');
+    // コンパスはズームの上に別の枠で置く（右下は後から足したものが上に並ぶ）。押すと北を真上に、傾きも 0 に戻す（T107）
+    map.addControl(new lib.NavigationControl({ showZoom: false, showCompass: true, visualizePitch: true }), 'bottom-right');
     this.watchTiles(map);
     // 読み込み前に destroy されたら 'load' は来ないので、'remove' でも待ちを解く
     await new Promise<void>((resolve) => {
