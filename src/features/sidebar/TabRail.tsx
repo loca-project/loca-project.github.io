@@ -9,6 +9,8 @@ import { useI18n } from '@/shared/hooks/useI18n';
 
 type TabLabelKey = 'map' | 'people' | 'post' | 'request' | 'region' | 'gear' | 'activity';
 
+// タブの数を変えたら、数を決め打ちした確認も直す: scripts/smoke.mjs のボタンの数、
+// ui-check の checks/users-tab（タブの数）・checks/rail-fit（低い画面に収まるか）。2026-10-02 に smoke が公開の途中で止まった
 export const TAB_ICONS: { mode: TabMode; icon: string; labelKey: TabLabelKey }[] = [
   // 並びは動線の順: 最近（ほかの人の動き。T80・ADR 0034） → 投稿 → 検索 → ユーザー → ランキング（リクエスト・地域・機器）。ユーザーはチャンネル別の代わり（T88・ADR 0031）
   { mode: TabMode.ACTIVITY, icon: 'fa-clock-rotate-left', labelKey: 'activity' },
