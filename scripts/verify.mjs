@@ -10,6 +10,7 @@
 import { execFileSync } from 'node:child_process';
 import { readdir, readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
+import { fetchCalls, fetchCallsWithoutSignal } from './lib/fetch-calls.mjs';
 
 const ROOT = process.cwd();
 const checks = [];
@@ -53,6 +54,13 @@ const aiImport = /(from\s+|import\s*\(\s*)['"](@huggingface\/transformers|onnxru
 const aiDir = `src${path.sep}adapters${path.sep}semantic${path.sep}`;
 const aiLeaks = sources.filter((s) => aiImport.test(s.text) && !s.file.startsWith(aiDir));
 record('AI 検索の部品の import は src/adapters/semantic/ のみ', aiLeaks.length === 0, aiLeaks.map((l) => l.file).join(', '));
+
+// 1d. src の fetch はすべて待ち時間の上限（signal）を持つ（T96・T103）
+//     上限が無いと、接続だけ受けて応答しないサーバーでボタンが「確認中」のまま戻らない
+const unbounded = sources.flatMap((s) => fetchCallsWithoutSignal(s.text).map((line) => `${s.file}:${line}`));
+const fetchCount = sources.reduce((n, s) => n + fetchCalls(s.text).length, 0);
+record('src の fetch に待ち時間の上限（signal）がある', fetchCount > 0 && unbounded.length === 0,
+  unbounded.length ? `上限なし: ${unbounded.join(', ')}` : `${fetchCount} か所`);
 
 // 2. package.json にも残っていないこと
 const pkg = JSON.parse(await readFile(path.join(ROOT, 'package.json'), 'utf8'));

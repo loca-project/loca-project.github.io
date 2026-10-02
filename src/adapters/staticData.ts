@@ -22,9 +22,12 @@ interface RequestBundle {
   markers?: RequestMarkerData[];
 }
 
+/** 公開データを待つ上限。応答が無いまま地図が空で止まらないよう、諦めて残りで描画する（T103） */
+const DATA_TIMEOUT_MS = 30_000;
+
 async function fetchJson<T>(url: string): Promise<T | null> {
   try {
-    const res = await fetch(url, { cache: 'no-cache' });
+    const res = await fetch(url, { cache: 'no-cache', signal: AbortSignal.timeout(DATA_TIMEOUT_MS) });
     if (!res.ok) {
       console.warn(`[loca] ${url} が ${res.status} を返しました`);
       return null;

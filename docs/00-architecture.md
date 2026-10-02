@@ -138,11 +138,12 @@ Firebase SDK は `src/adapters/firebase/index.ts` から遅延 import し、初�
 
 ## 可用性
 
-サーバーが無いので「落ちる」対象が少ない。残る依存は 4 つだけ。
+サーバーが無いので「落ちる」対象が少ない。残る依存は 5 つだけ。
 
 | 依存 | 落ちたとき |
 |---|---|
-| GitHub Pages | サイト全体が見られない（代替なし） |
+| GitHub Pages | サイト全体が見られない（代替なし）。公開データは 30 秒で諦め、読めた分で描画する（T103） |
+| YouTube oEmbed | 動画の登録だけ止まる。窓口（youtube.com・noembed.com）ごとに 8 秒で諦め、「応答しない」を「URL の誤り」と分けて伝える（T103）。閲覧は続く |
 | OpenStreetMap のタイル | 地図が灰色になる。ピンと閲覧は続く。画面上部の帯で知らせる |
 | Nominatim | 地名の取得と地名検索が使えない。10 秒で諦めて理由を出す。登録は地名なしで続行（予備なし・ADR 0032） |
 | Hugging Face（AI 検索のモデル） | Edge AI だけ使えない。起動は諦めて続け、語の一致の結果だけを出す（理由はコンソール。ADR 0033・T101） |
@@ -155,13 +156,14 @@ Firebase SDK は `src/adapters/firebase/index.ts` から遅延 import し、初�
 ```
 npm run typecheck   # 型
 npm run build       # ビルド
-npm run verify      # 設計上の約束を 25 項目チェック（2026-09-26）
+npm run verify      # 設計上の約束を 26 項目チェック（2026-10-02）
 npm run check       # 上記 3 つとテスト（test:scripts・test:core）をまとめて
 ```
 
 `npm run verify` が見ているもの（出力の各行が 1 項目）:
 
 - 廃止した依存が無い（src と package.json）。Firebase SDK の import は `src/adapters/firebase/` だけ。AI 検索の部品（transformers.js・onnxruntime-web）の import は `src/adapters/semantic/` だけ（ADR 0033）
+- src の `fetch` がすべて待ち時間の上限（`signal`）を持つ（`scripts/lib/fetch-calls.mjs`。T96・T103）
 - scripts の子プロセスに `shell: true` が無い（T65）
 - `features/` と `core/` に地図 SDK の直接 import が無い。`import.meta.env` を読むのは `runtime/config.ts` だけ
 - ソースに API キーが直書きされていない。`.env.example` 以外の `.env*` が git に無く、`.env.example` に値が無い

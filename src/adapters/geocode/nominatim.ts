@@ -14,7 +14,7 @@
 
 import type { LatLng, PlaceMeta } from '@/core/types';
 import type { GeocodePort } from '@/ports';
-import { UpstreamError } from '@/ports';
+import { UpstreamError, UpstreamTimeoutError } from '@/ports';
 import { PREFECTURES, prefectureFromCode } from '@/core/constants';
 
 const BASE = 'https://nominatim.openstreetmap.org';
@@ -27,7 +27,7 @@ const CACHE_LIMIT = 300;
 const CACHE_KEY = 'loca.geocode.v1';
 
 /** 待ち時間の上限を超えたことを表す（利用者への文言を分けるため）。 */
-export class GeocodeTimeoutError extends UpstreamError {}
+export class GeocodeTimeoutError extends UpstreamTimeoutError {}
 
 // ---- キャッシュ（メモリとブラウザの保存領域。保存領域が使えなくても動く）----
 

@@ -32,7 +32,8 @@ export async function checkForUpdate(): Promise<void> {
   if (!loaded) return;
   lastChecked = Date.now();
   try {
-    const res = await fetch(new URL('version.json', document.baseURI), { cache: 'no-store' });
+    // 応答しないときは次の機会に比べ直す（上限が無いと確認が終わらない。T103）
+    const res = await fetch(new URL('version.json', document.baseURI), { cache: 'no-store', signal: AbortSignal.timeout(10_000) });
     if (!res.ok) {
       console.warn(`[loca] version.json が ${res.status} を返しました`);
       return;

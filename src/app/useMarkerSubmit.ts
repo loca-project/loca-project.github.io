@@ -12,7 +12,7 @@ import { validateMarkerDraft } from '@/core/logic/validation';
 import { normalizeMemo, toMarkerTags } from '@/core/logic/tags';
 import { isValidEquipment } from '@/core/logic/equipment';
 import { findDuplicateByVideoId } from '@/core/logic/search';
-import type { AuthUser } from '@/ports';
+import { UpstreamTimeoutError, type AuthUser } from '@/ports';
 import { useServices } from '@/shared/hooks/useServices';
 import { useExclusive } from '@/shared/hooks/useExclusive';
 import { useProfile } from '@/shared/hooks/useProfile';
@@ -109,7 +109,11 @@ export function useMarkerSubmit() {
             video.fetchMeta(videoId),
             geocode.reverse(Number(ctx.form.lat), Number(ctx.form.lng)),
           ]);
-          if (metaResult.status === 'rejected') return { ok: false, message: t.alerts.fetchFail };
+          if (metaResult.status === 'rejected') {
+            // 応答しないときは URL の誤りと取られないよう、文言を分ける（T103）
+            const timedOut = metaResult.reason instanceof UpstreamTimeoutError;
+            return { ok: false, message: timedOut ? t.alerts.fetchTimeout : t.alerts.fetchFail };
+          }
           const meta = metaResult.value;
           const place = placeResult.status === 'fulfilled' ? placeResult.value : null;
 

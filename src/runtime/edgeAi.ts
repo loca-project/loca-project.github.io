@@ -37,7 +37,8 @@ async function tagVectors(port: SemanticPort): Promise<TagVector[]> {
   const toTags = (vectors: number[][], order: string[]) =>
     order.map((key, i) => ({ key, field: TAG_DESCRIPTIONS[key].field, vector: vectors[i] }));
   try {
-    const res = await fetch(new URL('./data/semantic-tags.json', document.baseURI));
+    // 応答しないときは端末で計算する側に回る（上限が無いと起動の見張りが諦めるまで待つ。T103）
+    const res = await fetch(new URL('./data/semantic-tags.json', document.baseURI), { signal: AbortSignal.timeout(30_000) });
     const saved = (await res.json()) as { model: string; fingerprint: string; keys: string[]; vectors: number[][] };
     if (saved.model === port.model.id && saved.fingerprint === descriptionsFingerprint()) return toTags(saved.vectors, saved.keys);
     console.warn('[loca] タグの埋め込みが今のモデル・説明文と違うので、端末で計算します（npm run semantic:vectors で作り直す）');

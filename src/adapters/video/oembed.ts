@@ -8,8 +8,11 @@
 
 import type { VideoMeta } from '@/core/types';
 import type { VideoMetaPort } from '@/ports';
-import { UpstreamError } from '@/ports';
+import { UpstreamError, UpstreamTimeoutError } from '@/ports';
 import { thumbnailUrl, watchUrl } from '@/core/logic/youtube';
+
+/** 窓口 1 つあたりの応答を待つ上限。上限が無いと、応答しないときに投稿ボタンが戻らない（T103） */
+export const OEMBED_TIMEOUT_MS = 8_000;
 
 interface OEmbedResponse {
   title?: string;
@@ -33,10 +36,11 @@ export const oembedVideoAdapter: VideoMetaPort = {
 
   async fetchMeta(videoId: string): Promise<VideoMeta> {
     let lastError: unknown = null;
+    let timeouts = 0;
 
     for (const build of ENDPOINTS) {
       try {
-        const res = await fetch(build(videoId));
+        const res = await fetch(build(videoId), { signal: AbortSignal.timeout(OEMBED_TIMEOUT_MS) });
         if (!res.ok) {
           lastError = new Error(`HTTP ${res.status}`);
           continue;
@@ -54,9 +58,12 @@ export const oembedVideoAdapter: VideoMetaPort = {
         };
       } catch (e) {
         lastError = e;
+        if (e instanceof DOMException && (e.name === 'TimeoutError' || e.name === 'AbortError')) timeouts += 1;
       }
     }
 
+    // どの窓口も応答しなかったときは、URL の誤りではないので別に伝える
+    if (timeouts === ENDPOINTS.length) throw new UpstreamTimeoutError('YouTube が応答しません', lastError);
     throw new UpstreamError(
       '動画情報の取得に失敗しました。URL が正しいか、動画が非公開になっていないか確認してください。',
       lastError,

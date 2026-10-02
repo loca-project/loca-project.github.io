@@ -24,3 +24,6 @@ export class UpstreamError extends Error {
     this.name = 'UpstreamError';
   }
 }
+
+/** 外部サービスが待ち時間の上限までに応答しなかった。「見つからない」と分けて伝えるため（T96・T103） */
+export class UpstreamTimeoutError extends UpstreamError {}

@@ -375,6 +375,7 @@ export const ja = {
     memoTooLong: '現地メモは 80 字までです。',
     fetchFail:
       '動画情報の取得に失敗しました。URL が正しいか、動画が非公開になっていないか確認してください。',
+    fetchTimeout: 'YouTube が応答しません。しばらく待ってから、もう一度お試しください。',
     locFail: '地名の取得に失敗しました。場所を変えるか、しばらく待って再試行してください。',
     duplicateUrl: 'この動画はすでに登録されています。',
     placeNotFound: '場所が見つかりませんでした。',

@@ -206,7 +206,7 @@ Google認証済みのユーザーが、画面右上のユーザーアイコン�
 | Google MAP を表示 | `MapPort` を定義。MapLibre GL JS + OpenStreetMap のタイル（API キー不要・予備なし。ADR 0032）。Google Maps は請求先アカウントが必須のため使わない |
 | Google MAP API で都道府県・市町村を取得 | `GeocodePort`。OpenStreetMap の Nominatim の逆ジオコーディング（キー不要・予備なし。ADR 0032）。都道府県は ISO のコード（JP-13）から引く。政令指定都市は市まで |
 | YouTube API でサムネイル等を取得 | `VideoMetaPort`。既定は `oembed`（キー不要だが再生数は取れない）、`youtube`（Data API・全項目）、`fixture`（完全オフライン） |
-| 両 API から応答があった場合のみ登録 | **変更**。動画情報は必須、地名は取れなくても登録し、同期で補う（ADR 0032）。失敗パターン 3 種のメッセージも要件どおり（`src/app/useMarkerSubmit.ts`） |
+| 両 API から応答があった場合のみ登録 | **変更**。動画情報は必須、地名は取れなくても登録し、同期で補う（ADR 0032）。動画情報が取れないときだけ止め、文言は 2 種（URL・非公開を疑う `fetchFail`／YouTube が応答しない `fetchTimeout`。T103。`src/app/useMarkerSubmit.ts`） |
 | 矩形範囲指定検索 | 維持。MapLibre のアダプタに実装 |
 | 地図クリックで登録モード | **変更**。仮マーカーが出るのは投稿タブのときだけ。地図タブのクリックは選択を解くかインフォウィンドウを閉じる（`src/app/useLocaApp.ts`） |
 | 仮マーカーは一律グレー | 維持（`NEUTRAL_HEX`） |

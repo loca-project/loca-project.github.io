@@ -377,6 +377,7 @@ export const en: DeepPartial<Dictionary> = {
     missingTags: 'Please choose what is in the video and its mood.',
     memoTooLong: 'The on-site note can be up to 80 characters.',
     fetchFail: 'Failed to fetch video info. Check the URL or whether the video is private.',
+    fetchTimeout: 'YouTube is not responding. Please wait a moment and try again.',
     locFail: 'Failed to resolve the place name. Try another spot or retry shortly.',
     duplicateUrl: 'This video is already registered.',
     placeNotFound: 'That place could not be found.',
