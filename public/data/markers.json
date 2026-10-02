@@ -1,41 +1,5 @@
 {
-  "generatedAt": 1790885031000,
-  "syncedAt": 1790885029869,
-  "markers": [
-    {
-      "id": "FundW64ySNLwYkYdk9vg",
-      "youtubeUrl": "https://www.youtube.com/watch?v=Firkhg9yU9g",
-      "videoId": "Firkhg9yU9g",
-      "lat": 35.631457,
-      "lng": 140.062633,
-      "tags": {
-        "mood": "nostalgic",
-        "season": "spring",
-        "style": "aerial",
-        "subject": "nature"
-      },
-      "youtube": {
-        "checkedAt": 1790885021178,
-        "durationSec": 8,
-        "likeCount": 0,
-        "publishedAt": 1763737574000,
-        "viewCount": 33
-      },
-      "equipment": {
-        "category": "",
-        "manufacturer": "",
-        "model": "",
-        "series": ""
-      },
-      "title": "Sample",
-      "channelTitle": "立神",
-      "thumbnailUrl": "https://i.ytimg.com/vi/Firkhg9yU9g/hqdefault.jpg",
-      "prefecture": "千葉県",
-      "city": "千葉市",
-      "ownerUid": "t66DuxCJGBd2PTVmrwpee9xl2zT2",
-      "createdBy": "管理者",
-      "createdAt": 1790401007396,
-      "updatedAt": 1790401007396
-    }
-  ]
+  "generatedAt": 1790970193286,
+  "syncedAt": 1790970192310,
+  "markers": []
 }
