@@ -7,10 +7,11 @@ import React from 'react';
 import { TabMode } from '@/core/types';
 import { useI18n } from '@/shared/hooks/useI18n';
 
-type TabLabelKey = 'map' | 'people' | 'post' | 'request' | 'region' | 'gear';
+type TabLabelKey = 'map' | 'people' | 'post' | 'request' | 'region' | 'gear' | 'activity';
 
 export const TAB_ICONS: { mode: TabMode; icon: string; labelKey: TabLabelKey }[] = [
-  // 並びは動線の順: 投稿 → 検索 → ユーザー → ランキング（リクエスト・地域・機器）。ユーザーはチャンネル別の代わり（T88・ADR 0031）
+  // 並びは動線の順: 最近（ほかの人の動き。T80・ADR 0034） → 投稿 → 検索 → ユーザー → ランキング（リクエスト・地域・機器）。ユーザーはチャンネル別の代わり（T88・ADR 0031）
+  { mode: TabMode.ACTIVITY, icon: 'fa-clock-rotate-left', labelKey: 'activity' },
   { mode: TabMode.POST, icon: 'fa-circle-plus', labelKey: 'post' },
   { mode: TabMode.MAP, icon: 'fa-magnifying-glass', labelKey: 'map' },
   { mode: TabMode.PEOPLE, icon: 'fa-user', labelKey: 'people' },
@@ -30,6 +31,7 @@ const ICON_BUTTON = 'flex h-11 w-11 items-center justify-center rounded-lg text-
 
 export default function TabRail({ current, expanded, onSelect, onToggle }: TabRailProps) {
   const { t } = useI18n();
+  const label = (key: TabLabelKey) => (key === 'activity' ? t.activity.tab : t.sidebar[key]);
 
   return (
     <nav
@@ -53,8 +55,8 @@ export default function TabRail({ current, expanded, onSelect, onToggle }: TabRa
             key={tab.mode}
             type="button"
             onClick={() => onSelect(tab.mode)}
-            title={t.sidebar[tab.labelKey]}
-            aria-label={t.sidebar[tab.labelKey]}
+            title={label(tab.labelKey)}
+            aria-label={label(tab.labelKey)}
             aria-current={active}
             className={`${ICON_BUTTON} ${
               active ? 'bg-loca-50 text-loca-600' : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'

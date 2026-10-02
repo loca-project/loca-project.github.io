@@ -3,6 +3,8 @@
 /** サイドメニューのタブ。 */
 export enum TabMode {
   MAP = 'MAP',
+  /** 最近のアクティビティ（新しい動画と撮影リクエスト。T80・ADR 0034） */
+  ACTIVITY = 'ACTIVITY',
   /** 投稿（マーカーと撮影リクエスト）。このタブの間だけ地図のクリックで場所を選ぶ */
   POST = 'POST',
   RANKING_REQUEST = 'RANKING_REQUEST',

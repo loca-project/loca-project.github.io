@@ -5,6 +5,7 @@
 
 import type { Dictionary } from './ja';
 import type { DeepPartial } from './deepPartial';
+import { activityEn } from './activity.en';
 import { adminEn } from './admin.en';
 
 export const en: DeepPartial<Dictionary> = {
@@ -370,6 +371,7 @@ export const en: DeepPartial<Dictionary> = {
   },
 
   admin: adminEn,
+  activity: activityEn,
 
   alerts: {
     invalidUrl: 'That YouTube URL is not valid.',

@@ -1,5 +1,6 @@
 /** 日本語リソース。これが基準となる形（en.ts は同じ形を満たす）。 */
 
+import { activityJa } from './activity.ja';
 import { adminJa } from './admin.ja';
 
 export const ja = {
@@ -367,6 +368,7 @@ export const ja = {
 
   // 管理者モード（要件 5・T27〜T61）。中身は admin.ja.ts
   admin: adminJa,
+  activity: activityJa,
 
   alerts: {
     invalidUrl: 'Youtube URL の形式が正しくありません。',

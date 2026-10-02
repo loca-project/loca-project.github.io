@@ -17,6 +17,8 @@ import type { LocaApp } from './useLocaApp';
 
 // ユーザーのタブは開いたときに読む（初期読み込みの JS を 260 kB 以内に保つ。T62・T88）
 const PeoplePanel = lazy(() => import('@/features/people/PeoplePanel'));
+// 最近のアクティビティも開いたときに読む（T80）
+const ActivityTab = lazy(() => import('./ActivityTab'));
 
 export interface SidebarHandlers {
   onSearch: () => void;
@@ -52,6 +54,7 @@ interface SidebarContentProps {
 }
 
 export function sidebarTitle(app: LocaApp, t: ReturnType<typeof useI18n>['t']): string {
+  if (app.tab === TabMode.ACTIVITY) return t.activity.title;
   if (app.tab === TabMode.RANKING_REGION) return t.headers.regionRanking;
   if (app.tab === TabMode.PEOPLE) return t.headers.people;
   if (app.tab === TabMode.RANKING_EQUIPMENT) return t.headers.gearRanking;
@@ -128,6 +131,14 @@ export default function SidebarContent({
           />
         )}
       </div>
+    );
+  }
+
+  if (app.tab === TabMode.ACTIVITY) {
+    return (
+      <Suspense fallback={<p className="text-[11px] text-gray-400">{t.details.loading}</p>}>
+        <ActivityTab app={app} />
+      </Suspense>
     );
   }
 
