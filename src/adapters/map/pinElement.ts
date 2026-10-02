@@ -1,4 +1,4 @@
-/** 地図エンジンに依存しないピンの DOM 生成。MapLibre / Google の双方で使う。 */
+/** 地図エンジンに依存しないピンの DOM 生成（MapLibre のアダプタが使う）。 */
 
 export interface PinVisual {
   color: string;
@@ -7,6 +7,13 @@ export interface PinVisual {
 }
 
 const PIN_PATH = 'M16 1C9.4 1 4 6.4 4 13c0 9 12 22 12 22s12-13 12-22c0-6.6-5.4-12-12-12z';
+
+/**
+ * 縁取りの色。OSM の明るい地図で白い縁取りは地に溶けるので濃くする（T98）。
+ * ラベル付き（撮影リクエスト。濃い地に白い数字）だけは、雰囲気のピンと見分けるため白のまま。
+ */
+const OUTLINE_DARK = '#1F2937';
+const OUTLINE_LIGHT = '#ffffff';
 
 /** 32x38 のピン。中央にラベルを置ける。 */
 export function createPinElement({ color, label, ghost }: PinVisual): HTMLElement {
@@ -25,7 +32,7 @@ export function createPinElement({ color, label, ghost }: PinVisual): HTMLElemen
   const path = document.createElementNS(svgNs, 'path');
   path.setAttribute('d', PIN_PATH);
   path.setAttribute('fill', color);
-  path.setAttribute('stroke', '#ffffff');
+  path.setAttribute('stroke', label ? OUTLINE_LIGHT : OUTLINE_DARK);
   path.setAttribute('stroke-width', '2');
   svg.appendChild(path);
 
