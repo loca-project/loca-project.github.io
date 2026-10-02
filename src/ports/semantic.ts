@@ -16,8 +16,8 @@ export type LoadProgress = (ratio: number | null) => void;
 /** 文を埋め込み（意味のベクトル）に変えるポート。モデルを差し替えても画面と検索の組み立ては変えない。 */
 export interface SemanticPort {
   readonly model: EmbeddingModelInfo;
-  /** モデルを読み込む（2 回目以降はすぐ返る）。失敗は UpstreamError */
-  load(onProgress?: LoadProgress): Promise<void>;
+  /** モデルを読み込む（2 回目以降はすぐ返る）。失敗は UpstreamError。signal を止めると取得も止める（T104） */
+  load(onProgress?: LoadProgress, signal?: AbortSignal): Promise<void>;
   /** 検索語の埋め込み（正規化済み） */
   embedQuery(text: string): Promise<number[]>;
   /** 検索される側の文（タグの説明文）の埋め込み（正規化済み） */

@@ -85,6 +85,8 @@ export async function startEdgeAi(onProgress: (ratio: number | null) => void): P
   const skip = skipReason(location.search, (navigator as Navigator & { connection?: { saveData?: boolean } }).connection);
   if (skip) return UNAVAILABLE(skip);
   const state = { at: Date.now(), downloading: false };
+  // 諦めたら裏で続く取得も止める（そのままだと 240 MB を読み続ける。T104）
+  const abort = new AbortController();
   try {
     const [{ createTransformersSemantic }, { MODELS, ACTIVE_MODEL }] = await Promise.all([
       import('@/adapters/semantic/transformers'),
@@ -99,7 +101,7 @@ export async function startEdgeAi(onProgress: (ratio: number | null) => void): P
           state.at = Date.now();
           state.downloading = ratio === null || ratio < 0.97;
           onProgress(ratio);
-        });
+        }, abort.signal);
         state.at = Date.now();
         state.downloading = false;
         const tags = await tagVectors(port);
@@ -117,6 +119,7 @@ export async function startEdgeAi(onProgress: (ratio: number | null) => void): P
       },
     };
   } catch (e) {
+    abort.abort();
     const reason = e instanceof Error ? `${e.message}${e.cause instanceof Error ? `（${e.cause.message}）` : ''}` : String(e);
     console.warn('[loca] Edge AI を使えないので、語の一致だけで検索します:', reason);
     return UNAVAILABLE(reason);
