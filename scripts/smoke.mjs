@@ -124,8 +124,8 @@ try {
 
   check('タイトルが Loca', (await run('document.title')) === 'Loca');
   check('地図の canvas がある', (await run(`document.querySelectorAll('canvas').length`)) === 1);
-  // 開閉ボタン 1 ＋ タブ 6（地図・投稿・ランキング 4 種）
-  check('サイドメニューのボタンが 7 個', (await run(`document.querySelectorAll('nav button').length`)) === 7);
+  // 開閉ボタン 1 ＋ タブ 7（最近・投稿・検索・ユーザー・リクエスト・地域・機器。ADR 0034）
+  check('サイドメニューのボタンが 8 個', (await run(`document.querySelectorAll('nav button').length`)) === 8);
 
   // ここが本命。地図タイルが 1 枚も来ていなければ、画面は白か灰色のまま。
   check('地図タイルが取得されている', tiles.length > 0, `${tiles.length} 枚`);
