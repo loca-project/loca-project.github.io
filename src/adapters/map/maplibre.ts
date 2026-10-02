@@ -34,6 +34,12 @@ export class MapLibreAdapter implements MapPort {
   private pinLayer: PinLayer | null = null;
   /** 読み込み前に渡されたピン。PinLayer を作ったら渡す */
   private pendingPins: MapPinOptions[] = [];
+  /**
+   * 地図を作る前に頼まれた中心と吹き出し。作ったら当てる。
+   * 共有リンク（?m=）は公開データが届いた時点で寄せるので、地図の部品の読み込みより先に来ることがある（T106）
+   */
+  private pendingCenter: { pos: LatLng; zoom?: number } | null = null;
+  private pendingInfo: InfoWindowOptions | null = null;
   private ghost: MlMarker | null = null;
   private popup: MlPopup | null = null;
 
@@ -107,6 +113,11 @@ export class MapLibreAdapter implements MapPort {
     });
 
     this.map = map;
+    if (this.pendingCenter) {
+      const { pos, zoom } = this.pendingCenter;
+      this.pendingCenter = null;
+      map.jumpTo({ center: [pos.lng, pos.lat], ...(zoom !== undefined ? { zoom } : {}) });
+    }
 
     map.addControl(new lib.NavigationControl({ showCompass: false }), 'bottom-right');
     this.watchTiles(map);
@@ -120,6 +131,7 @@ export class MapLibreAdapter implements MapPort {
     this.setupInteractions();
     this.pinLayer = new PinLayer(map, lib);
     this.pinLayer.setPins(this.pendingPins);
+    if (this.pendingInfo) this.openInfoWindow(this.pendingInfo);
   }
 
   private setupRectangleLayer(): void {
@@ -183,7 +195,10 @@ export class MapLibreAdapter implements MapPort {
   }
 
   setCenter(pos: LatLng, zoom?: number): void {
-    if (!this.map) return;
+    if (!this.map) {
+      this.pendingCenter = { pos, zoom };
+      return;
+    }
     this.map.easeTo({ center: [pos.lng, pos.lat], zoom: zoom ?? this.map.getZoom(), duration: 600 });
   }
 
@@ -232,7 +247,11 @@ export class MapLibreAdapter implements MapPort {
   openInfoWindow(options: InfoWindowOptions): void {
     const map = this.map;
     const lib = this.lib;
-    if (!map || !lib) return;
+    // 読み込みが終わる前（PinLayer を作る前）は覚えておき、mount の最後に開く
+    if (!map || !lib || !this.pinLayer) {
+      this.pendingInfo = options;
+      return;
+    }
     this.closeInfoWindow();
     this.popup = new lib.Popup({ offset: 38, closeButton: true, maxWidth: '320px' })
       .setLngLat([options.position.lng, options.position.lat])
@@ -242,6 +261,7 @@ export class MapLibreAdapter implements MapPort {
   }
 
   closeInfoWindow(): void {
+    this.pendingInfo = null;
     this.popup?.remove();
     this.popup = null;
   }
