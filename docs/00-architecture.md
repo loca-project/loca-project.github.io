@@ -74,7 +74,7 @@ Loca/                               ワークスペース（git の外）
 | `MapPort` | 地図の描画・ピン・情報ウィンドウ・矩形描画 | `maplibre` |
 | `VideoMetaPort` | 動画メタデータの取得 | `oembed` |
 | `GeocodePort` | 座標 ⇄ 地名 | `nominatim`（OpenStreetMap） |
-| `SemanticPort` | 文の埋め込み（Edge AI で検索語をタグに読み替える） | `transformers`（ブラウザで EmbeddingGemma。起動画面の間に `src/runtime/edgeAi.ts` が準備する。モデルは `models.ts` で差し替え。ADR 0033・T101） |
+| `SemanticPort` | 文の埋め込み（Edge AI で検索語をタグに読み替える） | `transformers`（ブラウザで EmbeddingGemma。起動画面の間に `src/runtime/edgeAi.ts` が準備する（データセーバーがオンなら準備しない。T105）。モデルは `models.ts` で差し替え。ADR 0033・T101） |
 | `AuthPort` | Google ログイン・ログアウト・状態の購読 | `firebase-auth`（ポップアップ方式） |
 | `MarkerStorePort` | マーカーの作成・本人の更新・論理削除・差分の購読 | `firestore`（レートリミットの印・動画の索引と同じバッチで書く。ADR 0012） |
 | `RequestStorePort` | 撮影リクエストの作成・取り下げ（論理削除）・届いた動画の受け取り（ADR 0028）・炎の読み取り（動画ごと・投稿者の合計。T82）・差分の購読 | `firestore-requests`（熱量の印と同じバッチで書く。受け取りは炎の集計とトランザクションで書く） |

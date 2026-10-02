@@ -5,7 +5,7 @@
  * - タグの説明文の埋め込みは前もって計算したもの（public/data/semantic-tags.json）を使う。
  *   モデルか説明文が違えば端末で計算し直す（スマホで 26 件を計算すると「準備中 100%」のまま止まった。2026-09-26）
  * - 止まったら諦めて、Edge AI なしで起動を続ける（取得中に STALL_MS 進まない・取得後に START_MS で終わらない）
- * - `?edgeai=off` で開くと準備しない（画面の確認用。/ui-check の --preview）
+ * - `?edgeai=off` で開くと準備しない（画面の確認用。/ui-check の --preview）。データセーバーがオンの端末も準備しない（T105）
  * このファイルは遅延 import する（初期読み込みの JS に入れない）。
  */
 
@@ -70,8 +70,20 @@ export function watch<T>(
   });
 }
 
+/**
+ * 準備しない理由。無ければ null。
+ * データセーバー（通信量を節約する設定）がオンの端末では、初回約 240 MB を読まない（T105。利用者の判断）。
+ * navigator.connection は Chrome 系だけにある（Safari・Firefox には無いので、準備する）
+ */
+export function skipReason(search: string, connection?: { saveData?: boolean }): string | null {
+  if (new URLSearchParams(search).get('edgeai') === 'off') return '?edgeai=off';
+  if (connection?.saveData === true) return 'データセーバーがオン';
+  return null;
+}
+
 export async function startEdgeAi(onProgress: (ratio: number | null) => void): Promise<EdgeAi> {
-  if (new URLSearchParams(location.search).get('edgeai') === 'off') return UNAVAILABLE('?edgeai=off');
+  const skip = skipReason(location.search, (navigator as Navigator & { connection?: { saveData?: boolean } }).connection);
+  if (skip) return UNAVAILABLE(skip);
   const state = { at: Date.now(), downloading: false };
   try {
     const [{ createTransformersSemantic }, { MODELS, ACTIVE_MODEL }] = await Promise.all([

@@ -45,6 +45,20 @@ describe('watch（止まったら諦めて、Edge AI なしで起動を続ける
   });
 });
 
+describe('skipReason（準備しない端末。T105）', () => {
+  it('データセーバーがオンなら準備しない', () => {
+    assert.equal(edge.skipReason('', { saveData: true }), 'データセーバーがオン');
+  });
+  it('データセーバーがオフ・navigator.connection が無い（Safari・Firefox）なら準備する', () => {
+    assert.equal(edge.skipReason('', { saveData: false }), null);
+    assert.equal(edge.skipReason('', undefined), null);
+    assert.equal(edge.skipReason('?m=abc', {}), null);
+  });
+  it('?edgeai=off なら準備しない', () => {
+    assert.equal(edge.skipReason('?edgeai=off', undefined), '?edgeai=off');
+  });
+});
+
 describe('semantic-tags.json（前もって計算したタグの埋め込み）', () => {
   it('今のモデルと説明文から作ったもの（違えば npm run semantic:vectors で作り直す）', async () => {
     const saved = JSON.parse(await readFile('public/data/semantic-tags.json', 'utf8'));
