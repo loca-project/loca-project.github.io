@@ -18,6 +18,9 @@ const PANEL_CLASS = [
   'rounded-xl border border-gray-200 bg-white/95 shadow-xl backdrop-blur transition-[left] duration-200',
 ].join(' ');
 
+/** 行の「地図へ」「共有」。スマホ幅（パネル約 290px）では印だけにして、題の幅を残す（2026-10-02） */
+const ACTION_CLASS = 'w-9 shrink-0 sm:w-20';
+
 /** パネルの幅（PANEL_CLASS の w-[min(28rem,calc(100vw-5.5rem))] と同じ式） */
 const panelWidth = (viewport: number) => Math.min(448, viewport - 88);
 /** 右上のアカウントのボタン（HeaderBar。right-4・ログインの文字で約 80px）が占める幅に余白を足したもの */
@@ -103,8 +106,10 @@ export default function ResultsPanel({
                   {row.subtitle && (
                     <p className={`${row.poster ? 'break-words' : 'truncate'} text-[10px] text-gray-500`}>{row.subtitle}</p>
                   )}
+                  {/* スマホ幅では右端の指標を題の下に回す（右に並べると行がパネルから 42px はみ出した。2026-10-02） */}
+                  {row.metric && <p className="truncate font-mono text-[10px] text-gray-600 sm:hidden">{row.metric}</p>}
                 </div>
-                <span className="shrink-0 text-[11px] font-mono text-gray-600">{row.metric}</span>
+                {row.metric && <span className="hidden shrink-0 font-mono text-[11px] text-gray-600 sm:block">{row.metric}</span>}
                 {/* 幅は中身に合わせる（w-20 では iPhone の書体で「プロフィール」がはみ出した。2026-09-26） */}
                 {row.poster && (
                   <Button variant="secondary" className="shrink-0" onClick={() => onOpenPoster?.(row.poster!)}>
@@ -116,19 +121,26 @@ export default function ResultsPanel({
                 {!row.poster && (
                   <Button
                     variant="secondary"
-                    className="w-20 shrink-0"
+                    className={ACTION_CLASS}
                     disabled={!row.position}
                     onClick={() => row.position && onJump(row.position)}
                     title={t.form.jumpToMap}
+                    aria-label={t.myPosts.jump}
                   >
-                    <i className="fa-solid fa-location-arrow mr-1" />
-                    {t.myPosts.jump}
+                    <i className="fa-solid fa-location-arrow sm:mr-1" />
+                    <span className="hidden sm:inline">{t.myPosts.jump}</span>
                   </Button>
                 )}
                 {onShare && row.markerId && (
-                  <Button variant="secondary" className="w-20 shrink-0" onClick={() => onShare(row.markerId!)}>
-                    <i className="fa-solid fa-share-nodes mr-1" />
-                    {t.actions.share}
+                  <Button
+                    variant="secondary"
+                    className={ACTION_CLASS}
+                    onClick={() => onShare(row.markerId!)}
+                    title={t.actions.share}
+                    aria-label={t.actions.share}
+                  >
+                    <i className="fa-solid fa-share-nodes sm:mr-1" />
+                    <span className="hidden sm:inline">{t.actions.share}</span>
                   </Button>
                 )}
               </li>
