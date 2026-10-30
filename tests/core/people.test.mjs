@@ -12,7 +12,7 @@ let rankPeople;
 let DEFAULT_PEOPLE_FILTER;
 
 before(async () => {
-  vite = await createServer({ server: { middlewareMode: true }, appType: 'custom', logLevel: 'error', optimizeDeps: { noDiscovery: true } });
+  vite = await createServer({ server: { middlewareMode: true, ws: false }, appType: 'custom', logLevel: 'error', optimizeDeps: { noDiscovery: true } });
   ({ summarizePosters, rankPeople, DEFAULT_PEOPLE_FILTER } = await vite.ssrLoadModule('/src/core/logic/people.ts'));
 });
 after(async () => { await vite.close(); });

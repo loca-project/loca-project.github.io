@@ -13,7 +13,7 @@ let models;
 let tags;
 
 before(async () => {
-  vite = await createServer({ server: { middlewareMode: true }, appType: 'custom', logLevel: 'error', optimizeDeps: { noDiscovery: true } });
+  vite = await createServer({ server: { middlewareMode: true, ws: false }, appType: 'custom', logLevel: 'error', optimizeDeps: { noDiscovery: true } });
   edge = await vite.ssrLoadModule('/src/runtime/edgeAi.ts');
   models = await vite.ssrLoadModule('/src/adapters/semantic/models.ts');
   tags = await vite.ssrLoadModule('/src/core/constants/tagDescriptions.ts');

@@ -14,7 +14,7 @@ let createReportStore;
 
 before(async () => {
   env = await setupEnv();
-  vite = await createServer({ server: { middlewareMode: true }, appType: 'custom', logLevel: 'error', optimizeDeps: { noDiscovery: true } });
+  vite = await createServer({ server: { middlewareMode: true, ws: false }, appType: 'custom', logLevel: 'error', optimizeDeps: { noDiscovery: true } });
   ({ createReportStore } = await vite.ssrLoadModule('/src/adapters/firebase/reportStore.ts'));
 });
 after(async () => {

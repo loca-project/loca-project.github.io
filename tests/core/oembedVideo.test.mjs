@@ -13,7 +13,7 @@ let ports;
 const realFetch = globalThis.fetch;
 
 before(async () => {
-  vite = await createServer({ server: { middlewareMode: true }, appType: 'custom', logLevel: 'error', optimizeDeps: { noDiscovery: true } });
+  vite = await createServer({ server: { middlewareMode: true, ws: false }, appType: 'custom', logLevel: 'error', optimizeDeps: { noDiscovery: true } });
   o = await vite.ssrLoadModule('/src/adapters/video/oembed.ts');
   ports = await vite.ssrLoadModule('/src/ports/index.ts');
 });
