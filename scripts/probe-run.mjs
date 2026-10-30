@@ -1,6 +1,6 @@
 /**
  * 疎通確認（probe-google.yml）を手動で実行し、終わるまで待って結果の行だけを出す。
- * YouTube Data API のキーは Actions の Secrets にしか無いので、API の返り値を確かめるときはこれを使う（T44）。
+ * Actions で使うキー（loca-youtube）は Secrets にしか無いので、その経路の API の返り値を確かめるときはこれを使う（T44）。
  *
  *   npm run probe                          既定の動画で実行（main の版）
  *   npm run probe -- <動画ID>              調べる動画を変える

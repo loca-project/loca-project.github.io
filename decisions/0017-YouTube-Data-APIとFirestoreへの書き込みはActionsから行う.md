@@ -18,6 +18,7 @@
 
 1. **YouTube Data API は GitHub Actions からだけ呼ぶ。** API キーは YouTube Data API だけに制限し、GitHub Secrets（`YOUTUBE_API_KEY`）に置く。
    `src/` からの呼び出しは `npm run verify` が禁止する。
+   （例外: 地域の調査のスクリプトは、この PC から専用のキーで呼ぶ。2026-10-24 の追記。T130）
 2. **Actions から Firestore への書き込みは Workload Identity 連携で行う。** GitHub の OIDC トークンを、
    このリポジトリの Actions に限ってサービスアカウント `loca-actions` に交換する。鍵ファイルは作らない。
    サービスアカウントの権限は `roles/datastore.user`（Firestore の読み書き）だけ。
@@ -75,3 +76,21 @@ YouTube Data API の既定の割り当ては 1 日 10,000 ユニット（公式�
 
 注意: 毎時の同期は Firestore の markers と requests を全件読む。登録が毎時続くと 1 日に最大 23 回になるので、
 マーカーが 1000 件を超えたら、Spark の読み取りの上限（1 日 5 万件）に対して見直す。
+
+## 追記（2026-10-24 地域の調査はこの PC から専用のキーで呼ぶ。T130）
+
+地域の調査（T128）は、公式チャンネルの全動画の一覧を取り直しながら照合するので、Actions に push して流すと 1 回ごとに承認と数分の待ちが要る。
+利用者の判断で、**調べもののスクリプトに限り、この PC から YouTube Data API を呼ぶ**。背景の制約（キーをブラウザに配らない・鍵ファイルを作らない）には触れない。
+
+| 項目 | 内容 |
+|---|---|
+| キー | `loca-survey`（表示名「Loca Survey - YouTube Data API」）。YouTube Data API だけに制限。Actions の `loca-youtube` とは別 |
+| 置き場所 | `project/.env.local` の `YOUTUBE_SURVEY_API_KEY`（git の外）。`VITE_` で始めない（Vite がブラウザに配るため） |
+| 作り方 | `npm run survey:key`（`scripts/setup-survey-key.mjs`。何度流しても同じ結果） |
+| 割り当て | 1 日 10,000 ユニットを Actions と共有する（プロジェクト単位）。Actions はマーカー 1 万件でも毎晩 200 ユニット（決定の節）、毎時の未取得分はわずか |
+| 漏れたとき | 割り当てを使われるだけで、請求は無い（請求先が無い）。このキーだけを消せば止まる |
+| 消し方 | コンソールの「API とサービス → 認証情報」で「Loca Survey - YouTube Data API」（キー ID `loca-survey`）を削除し、`.env.local` の行を消す |
+
+- `src/` から YouTube Data API を呼ばない決まり（決定 1 の後半と `npm run verify` の検査）はそのまま。
+- 確かめたこと（2026-10-24）: このキーで `videos.list` が 200、制限の外の Identity Toolkit（`accounts:createAuthUri`）が 403 `API_KEY_SERVICE_BLOCKED`。
+  同じ窓口がブラウザ用のキーでは 200 になることを先に確かめた（陽性の対照）。`accounts:query` はキーより先にログインを求めて 401 になり、試験に使えなかった。

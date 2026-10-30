@@ -124,7 +124,7 @@ Firebase SDK は `src/adapters/firebase/index.ts` から遅延 import し、初�
 
 基準は要件どおり再生数（`src/core/logic/ranking.ts`）。
 再生数・動画の投稿日・長さは、毎晩 Actions が YouTube Data API で取って markers.json に入れる（ADR 0017）。
-ブラウザは YouTube Data API を呼ばない（登録時の題名などは oEmbed。API キーは Actions の Secrets だけ）。
+ブラウザは YouTube Data API を呼ばない（登録時の題名などは oEmbed。サイトの経路の API キーは Actions の Secrets だけ。地域の調査のスクリプト用は ADR 0017 の追記）。
 
 | 項目 | 現在 |
 |---|---|

@@ -17,7 +17,7 @@
 - 頻繁に使うものは `.claude/skills/` からラップすると `/名前` で呼べます。
 - 子プロセスを `shell: true` で起動しない（`npm run verify` が検出）。npm は `process.execPath` と `npm_execpath` で、
   gh・git は `execFileSync` で直接起動する（T65。`release.mjs` の `npm()` が見本）。
-- YouTube Data API の返り値を確かめるときは `npm run probe -- <動画ID> [--ref <枝>]`（キーは Actions の Secrets にだけある）。
+- YouTube Data API の返り値を確かめるときは `npm run probe -- <動画ID> [--ref <枝>]`（Actions の経路のキーは Secrets にだけある。調べもの専用のキーは `npm run survey:key`。ADR 0017 の追記）。
 - 本番の Firestore をオーナー権限で読むときは `npm run fs:read -- get <コレクション>/<ID>` か `list <コレクション> [--where 項目==値] [--sum 項目]`（書かない。uid・メールは伏せる。索引が要れば終了コード 3）。
 - 撮影リクエストと熱量の記録（heatBudgets）が合っているかは `npm run heat:check`（読むだけ。食い違いがあれば終了コード 3。T70）。
   合わない持ち主のリクエストは、ルールが差分の一致を求めるため管理者でも取り下げられないことがある。

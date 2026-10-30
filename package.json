@@ -44,6 +44,7 @@
     "semantic:eval": "node scripts/semantic-eval.mjs",
     "semantic:vectors": "node scripts/semantic-vectors.mjs",
     "keys:check": "node scripts/api-key-check.mjs",
+    "survey:key": "node scripts/setup-survey-key.mjs",
     "size:breakdown": "node scripts/size-breakdown.mjs"
   },
   "dependencies": {

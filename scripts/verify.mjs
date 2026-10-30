@@ -35,7 +35,7 @@ const sources = await Promise.all(
 
 // 1. 廃止した依存が残っていないこと
 //    Google Maps Platform（地図・Geocoding）は無料の範囲の利用でも請求先アカウントが必須（ADR 0010・0011）
-//    YouTube Data API は Actions（scripts/）からだけ呼ぶ。キーをブラウザに配らないため src からは禁止（ADR 0017）
+//    YouTube Data API は Actions と調べもののスクリプト（scripts/）からだけ呼ぶ。キーをブラウザに配らないため src からは禁止（ADR 0017）
 const banned = /(@googlemaps|maps\.googleapis\.com|googleapis\.com\/youtube|@tensorflow|@google\/genai)/;
 const leftovers = sources.filter((s) => banned.test(s.text));
 record('src に Google Maps Platform・YouTube Data API・TensorFlow の呼び出しが無い',
