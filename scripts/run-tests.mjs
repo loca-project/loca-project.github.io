@@ -5,6 +5,9 @@
  *
  * なぜ要るか: node の --test-timeout は、止まった after には効かない（上限 5 秒の見本が 40 秒でも終わらなかった。T143）。
  * 試験の Vite の後片付けが止まると npm run check が 3 時間戻らず、check:head を通る deploy・release も止まった。
+ *
+ * 1 ファイルずつ流す（test:rules と同じ）。Vite のキャッシュが無いとき、並列の Vite が node_modules/.vite/deps_* の rename を取り合って
+ * Windows で EPERM になり、before が落ちたまま止まるため（HEAD を取り出した直後の 1 回目に毎回起きた。T143）。
  */
 import { execFileSync, spawn } from 'node:child_process';
 
@@ -14,7 +17,7 @@ if (!Number(limitSec) || patterns.length === 0) {
   process.exit(2);
 }
 
-const child = spawn(process.execPath, ['--test', ...patterns], { stdio: 'inherit' });
+const child = spawn(process.execPath, ['--test', '--test-concurrency=1', ...patterns], { stdio: 'inherit' });
 let timedOut = false;
 
 function stopTree(pid) {
