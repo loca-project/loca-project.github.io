@@ -18,7 +18,7 @@ import path from 'node:path';
 import { setTimeout as sleep } from 'node:timers/promises';
 
 const URL_TO_OPEN = process.argv[2] ?? 'http://127.0.0.1:4173/';
-const SHOT = path.join(process.cwd(), '..', 'tmp', 'smoke.png');
+const SHOT = path.join(process.cwd(), '..', '.state', 'smoke.png');
 const PORT = 9339;
 
 const CANDIDATES = [

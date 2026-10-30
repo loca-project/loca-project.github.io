@@ -3,7 +3,7 @@
  *
  * 複数のチャットが同じ作業ツリーを編集していると、作業ツリーには他人の書きかけが混ざる。
  * 検証・ルールの反映を作業ツリーで行うと、その書きかけまで検証・反映してしまう（2026-09-25 T29）。
- * ここでは git worktree で HEAD を ../tmp/head-<時刻>/ に取り出し、node_modules はリンクで共有し、
+ * ここでは git worktree で HEAD を ../tmp/work/_head-<時刻>/ に取り出し、node_modules はリンクで共有し、
  * .env.local（git 管理外）は写してから処理し、終わったら片付ける。
  *
  * 片付けの注意: node_modules のリンク（Windows ではジャンクション）を先に外す。
@@ -50,7 +50,7 @@ function unlinkModules(dir) {
  * 片付けで消せなかった場所は警告だけ出す（tmp/ は git の管理外で、公開には影響しない）。
  */
 export async function withHeadSnapshot(root, fn) {
-  const dir = resolve(root, '..', 'tmp', `head-${Date.now()}`);
+  const dir = resolve(root, '..', 'tmp', 'work', `_head-${Date.now()}`);
   git(root, ['worktree', 'add', '--detach', dir, 'HEAD']);
   try {
     symlinkSync(join(root, 'node_modules'), join(dir, 'node_modules'), 'junction');

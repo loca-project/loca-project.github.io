@@ -82,7 +82,7 @@ npm run deploy
 
 **deploy はコミットしない**（2026-09-25 から。T68）。以前は `git add -A` で作業ツリーをすべてコミットしていたが、
 複数のチャットが同じ作業ツリーを編集していると、他人の書きかけまで公開してしまう。
-先に自分の変更をコミットしてから実行する。作業ツリーに未コミットの変更があれば、HEAD を `tmp/head-*` に取り出して検証する
+先に自分の変更をコミットしてから実行する。作業ツリーに未コミットの変更があれば、HEAD を `tmp/work/_head-*` に取り出して検証する
 （`scripts/lib/head-snapshot.mjs`。検証だけなら `npm run check:head`）。
 
 push すると `.github/workflows/deploy.yml` が走り、数分で Pages に反映される。
@@ -207,7 +207,7 @@ npm run smoke
 DOM の文字列やピンの数だけを見ていると、地図が真っ白でも通ってしまう
 （マーカーは HTML 要素なので地図が壊れていても描画される）。実際にこれで一度見逃した。
 
-スクリーンショットが `tmp/smoke.png` に出るので、**目視でも確認すること。**
+スクリーンショットが `.state/smoke.png` に出るので、**目視でも確認すること。**
 
 公開済みの URL に対しても実行できる。
 
@@ -237,7 +237,7 @@ npm run smoke -- https://<owner>.github.io/<repo>/
 | 地図が灰色のまま | 画面上部に地図タイルの帯が出ていれば OpenStreetMap のタイルに到達できていない。帯が無ければ地図の表示位置がおかしい可能性（`maxBounds` の罠。[ADR 0007](../decisions/0007-maxBoundsを使わない.md) 参照）|
 | ピンが出ない | `project/public/data/markers.json` が空。`npm run seed` で復旧できる |
 | ログインが出ない・投稿タブが「受け付けていません」 | Firebase の設定値が空。本番はリポジトリの Variables、ローカルは `.env.local` の `VITE_FIREBASE_*` を確認する |
-| ログインに失敗する（identitytoolkit が 403 `API_KEY_HTTP_REFERRER_BLOCKED` を返す） | 開いている URL が API キーのリファラーの許可に無い（別のポート・`127.0.0.1`・独自ドメイン）。許可の一覧は [ADR 0030](../decisions/0030-ブラウザ用APIキーはリファラーで絞りApp-Checkは使わない.md) |
+| ログインに失敗する（identitytoolkit が 403 `API_KEY_HTTP_REFERRER_BLOCKED` を返す） | 開いている URL が API キーのリファラーの許可に無い（別のポート・`127.0.0.1`・独自ドメイン）。許可の一覧は `decisions/` の ADR 0030 |
 | 公開データに消したはずの行が残る | 物理削除は購読に届かない。`gh workflow run sync-firestore.yml` で作り直す |
 | 管理者モードが出ない | 別のアカウントでログインしていることが多い。`npm run admin:accounts` で最後にログインしたアカウントを確かめる |
 | push が `Internal Server Error` で拒否される | GitHub 側の一時的な失敗。`npm run deploy` は未 push のコミットを 1 件ずつ push し直す（2026-09-24 に 2 件まとめてが 3 回失敗し、1 件ずつなら通った） |
