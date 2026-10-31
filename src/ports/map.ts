@@ -25,7 +25,7 @@ export interface InfoWindowOptions {
 
 /**
  * 地図エンジンのポート。
- * MapLibre(OSM) と Google Maps のどちらでも同じ機能を満たせる粒度に切っている。
+ * 地図の部品を差し替えても同じ機能を満たせる粒度に切っている（今の実装は MapLibre と OpenStreetMap。ADR 0032）。
  */
 export interface MapPort extends Adapter {
   /** 地図を生成して DOM に載せる。二重呼び出しは無視する。 */
