@@ -11,7 +11,7 @@
 ## どんなサイトか
 
 日本地図の上に、誰かが「ここで撮った」動画のマーカーが並びます。
-マーカーには撮影地の地名、そのとき感じたこと（感情タグ）、使った撮影機器が紐づいています。
+マーカーには撮影地の地名、タグ（映っているもの・雰囲気など）、使った撮影機器が紐づいています。
 
 - **地図から探す** — ピンをクリックすると動画とその場所の情報が出ます
 - **絞り込む** — 地名やキーワードでの検索（Edge AI が意味の近い動画も探す。起動のときに準備し、初回に約 240 MB。データセーバーがオンの端末では準備せず語の一致だけ）、地図上をドラッグしての範囲指定検索
@@ -38,7 +38,7 @@
 ## プライバシー
 
 - **閲覧に個人情報は要りません。** ログインは投稿・撮影リクエスト・通報・いいねのときだけです
-- **公開データに出るのは、投稿者の識別子（Firebase の uid）と、そこから作る仮の投稿者名（`user-xxxxxx`）だけ**です。
+- **公開データに出るのは、投稿者の識別子（Firebase の uid）と、投稿者名として登録したニックネームだけ**です。
   プロフィールで登録した YouTube チャンネルは、あなたの公開プロフィールのリンクとして公開されます（ADR 0029）。
   Google アカウントのメールアドレス・名前・写真は、認証を担う Firebase Authentication の中にだけあり、公開データには出しません
 - **動画そのものは保存しません。** YouTube の埋め込みで再生します
@@ -59,7 +59,7 @@
 |---|---|
 | ホスティング | GitHub Pages |
 | 地図 | MapLibre GL JS + [OpenStreetMap](https://www.openstreetmap.org/copyright) のタイル |
-| 動画情報 | YouTube oEmbed |
+| 動画情報 | YouTube oEmbed（登録時）＋ YouTube Data API（毎晩・GitHub Actions だけ） |
 | 地名 | OpenStreetMap の Nominatim（地名検索・逆ジオコーディング） |
 | Edge AI（AI 検索） | ブラウザで動く埋め込みモデル（EmbeddingGemma。Hugging Face から読む） |
 | ログインと書き込み | Firebase Authentication・Cloud Firestore（無料の Spark プラン） |
@@ -70,12 +70,12 @@
 ```
 npm ci
 npm run data:seed   # ローカル確認用のサンプルデータ
-npm run dev         # http://127.0.0.1:5173
+npm run dev         # http://localhost:5173
 ```
 
 | コマンド | 内容 |
 |---|---|
-| `npm run check` | 型チェック＋ビルド＋設計上の約束の検査 |
+| `npm run check` | 型チェック＋ビルド＋設計上の約束の検査＋テスト |
 | `npm run smoke` | 実ブラウザで地図が描画されるかを確認 |
 | `npm run data:clear` | 公開データを空に戻す |
 | `npm run deploy` | 検証して GitHub Pages へ公開 |

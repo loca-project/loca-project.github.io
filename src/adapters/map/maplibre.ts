@@ -224,7 +224,7 @@ export class MapLibreAdapter implements MapPort {
     this.pinLayer?.setPins(pins);
   }
 
-  /** 仮マーカーは要件 3.2 により感情タグによらず一律グレー。 */
+  /** 仮マーカーは要件 3.2 によりタグによらず一律グレー。 */
   setGhostPin(position: LatLng | null): void {
     const map = this.map;
     const lib = this.lib;

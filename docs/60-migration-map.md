@@ -13,13 +13,13 @@
 
 | 移植元 | 行数 | 移植先 | 備考 |
 |---|---|---|---|
-| `App.tsx` | 1544 | `src/App.tsx`, `src/app/AppShell.tsx`, `useLocaApp.ts`, `SidebarContent.tsx`, `usePins.ts`, `useMarkerSubmit.ts`, `useSearchAndRanking.ts`, `UserMenu.tsx` | 状態・描画・操作を分離 |
+| `App.tsx` | 1544 | `src/App.tsx`, `src/app/AppShell.tsx`, `useLocaApp.ts`, `SidebarContent.tsx`, `usePins.ts`, `useMarkerSubmit.ts`, `useSearchAndRanking.ts`, `HeaderBar.tsx` | 状態・描画・操作を分離 |
 | `App.tsx`（続き） | — | `src/app/useAppActions.ts`, `useMarkerInfoWindow.ts` | AppShell から分けた操作とインフォウィンドウ（T145） |
-| `services/firebase.ts` | 1535 | `src/adapters/firebase/*`（9 ファイル）＋ `src/adapters/local/*`（10 ファイル） | 1 実装 → 2 実装に増やしたうえで分割 |
-| `services/externalApis.ts` | 144 | `src/adapters/video/*`（3）、`src/adapters/geocode/*`（4） | YouTube と地図を別ポートに分離 |
+| `services/firebase.ts` | 1535 | `src/adapters/firebase/*` | 分割した。`src/adapters/local/` はのちに廃止（下の削除の表） |
+| `services/externalApis.ts` | 144 | `src/adapters/video/*`、`src/adapters/geocode/*` | YouTube と地図を別ポートに分離 |
 | `services/edgeAi.ts` | 290 | `src/adapters/semantic/models.ts`・`transformers.ts`、`src/core/logic/semanticSearch.ts` | 2026-09-22 に tfjs ごと削除し、2026-09-26 に transformers.js で作り直した（ADR 0033） |
 | `types.ts` | 200 | `src/core/types/*`（7） | 関心ごとに分割 |
-| `constants.ts` | 301 | `src/core/constants/*`（6）＋ `src/i18n/*`（3） | **API キーの直書きは持ち込まない** |
+| `constants.ts` | 301 | `src/core/constants/*`＋ `src/i18n/*` | **API キーの直書きは持ち込まない** |
 | `components/ResultsView.tsx` | 499 | `src/features/results/ResultsPanel.tsx`, `resultRow.ts` | 行の形を 1 種類に正規化 |
 | `components/Sidebar/MarkerForm.tsx` | 364 | `src/features/sidebar/MarkerForm.tsx`, `src/features/marker/formState.ts` | |
 | `components/Sidebar/SearchPanel.tsx` | 124 | `src/features/sidebar/SearchPanel.tsx` | |
@@ -29,7 +29,7 @@
 | `components/ReportModal.tsx` | 58 | `src/features/report/ReportModal.tsx` | 要件 3.8 の複数選択に修正 |
 | `components/MyMarkersModal.tsx` | 315 | `src/features/profile/MyPostsModal.tsx`, `src/core/logic/myPosts.ts` | 撮影リクエストも一覧する。地図の一覧から本人の uid で絞る（T53） |
 | `components/VideoDetailsModal.tsx` | 132 | `src/features/marker/VideoDetailsModal.tsx` | |
-| `components/RequestDetailsModal.tsx` | 224 | `src/features/request/RequestDetailsModal.tsx` | |
+| `components/RequestDetailsModal.tsx` | 224 | `src/features/sidebar/RequestView.tsx` | 地点の閲覧はサイドメニューのパネルにまとめた |
 | `components/AdminMode/*.tsx` | 12 ファイル | `src/features/admin/*.tsx`（10 ファイル） | タブ構成を整理（下記） |
 | `equipment_data.json` | 28 | `public/data/equipment.json` | 4 段に作り直した。3 時間ごとの機器の同期がコードの既定と管理者の編集から作る（ADR 0018・0025） |
 | `docs/REQUIREMENTS.md` | 467 | `project/docs/10〜50-requirements-*.md` | 章ごとに分割＋差分注記 |

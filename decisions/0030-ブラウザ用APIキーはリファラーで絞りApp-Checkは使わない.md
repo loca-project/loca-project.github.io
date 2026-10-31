@@ -16,7 +16,8 @@ Firebase のブラウザ用の API キー（`VITE_FIREBASE_API_KEY`）は公開�
 |---|---|
 | Firestore の REST を、キーなし・でたらめなキー・リファラー制限付きのキー（Referer なし）で読む | 3 つとも 200。**Firestore はキーを検査しない**（守りはルールだけ） |
 | identitytoolkit（ログインの API）を、リファラー制限付きのキーで呼ぶ | 許可したサイトの Referer は 200、Referer なし・別のサイトは 403 `API_KEY_HTTP_REFERRER_BLOCKED` |
-| reCAPTCHA（App Check の提供元）の条件 | 無料の範囲（月 1 万回）でも Google Cloud の支払い方法の登録が要る（[比較表](https://docs.cloud.google.com/recaptcha/docs/compare-tiers)・[移行の案内](https://docs.cloud.google.com/recaptcha/docs/migrate-recaptcha)） |
+| reCAPTCHA（App Check の提供元）の条件 | 無料の範囲（月 1 万回）でも Google Cloud の支払い方法の登録が要る |
+| （同上の出典） | [比較表](https://docs.cloud.google.com/recaptcha/docs/compare-tiers)・[移行の案内](https://docs.cloud.google.com/recaptcha/docs/migrate-recaptcha) |
 
 ## 決定
 
