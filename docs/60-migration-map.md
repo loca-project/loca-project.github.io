@@ -13,7 +13,8 @@
 
 | 移植元 | 行数 | 移植先 | 備考 |
 |---|---|---|---|
-| `App.tsx` | 1544 | `src/App.tsx`, `src/app/AppShell.tsx`, `useAppActions.ts`, `useMarkerInfoWindow.ts`, `useLocaApp.ts`, `SidebarContent.tsx`, `usePins.ts`, `useMarkerSubmit.ts`, `useSearchAndRanking.ts`, `UserMenu.tsx` | 状態・描画・操作を分離 |
+| `App.tsx` | 1544 | `src/App.tsx`, `src/app/AppShell.tsx`, `useLocaApp.ts`, `SidebarContent.tsx`, `usePins.ts`, `useMarkerSubmit.ts`, `useSearchAndRanking.ts`, `UserMenu.tsx` | 状態・描画・操作を分離 |
+| `App.tsx`（続き） | — | `src/app/useAppActions.ts`, `useMarkerInfoWindow.ts` | AppShell から分けた操作とインフォウィンドウ（T145） |
 | `services/firebase.ts` | 1535 | `src/adapters/firebase/*`（9 ファイル）＋ `src/adapters/local/*`（10 ファイル） | 1 実装 → 2 実装に増やしたうえで分割 |
 | `services/externalApis.ts` | 144 | `src/adapters/video/*`（3）、`src/adapters/geocode/*`（4） | YouTube と地図を別ポートに分離 |
 | `services/edgeAi.ts` | 290 | `src/adapters/semantic/models.ts`・`transformers.ts`、`src/core/logic/semanticSearch.ts` | 2026-09-22 に tfjs ごと削除し、2026-09-26 に transformers.js で作り直した（ADR 0033） |
