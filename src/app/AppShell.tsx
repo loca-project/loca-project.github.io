@@ -1,20 +1,11 @@
 /** 画面全体の組み立てと、各操作のつなぎ込み。 */
 
-import React, { useCallback, useEffect, useState } from 'react';
-import type { LatLng, ReportReason } from '@/core/types';
-import { MapMode, TabMode } from '@/core/types';
-import { encodeSharedView } from '@/core/logic/shareUrl';
+import React, { useCallback, useState } from 'react';
+import type { LatLng } from '@/core/types';
+import { TabMode } from '@/core/types';
 import { useI18n } from '@/shared/hooks/useI18n';
 import { useAuth } from '@/shared/hooks/useAuth';
-import { useExclusive } from '@/shared/hooks/useExclusive';
-import { useToast } from '@/shared/components/Toast';
 import MapCanvas from '@/features/map/MapCanvas';
-import {
-  LOCA_INFO_EVENT,
-  buildMarkerInfoHtml,
-  installInfoWindowDelegate,
-  type InfoActionDetail,
-} from '@/features/map/infoWindow';
 import TabRail from '@/features/sidebar/TabRail';
 import SidebarPanel, { SIDEBAR_PANEL_WIDTH, SIDEBAR_RAIL_WIDTH } from '@/features/sidebar/SidebarPanel';
 import ResultsPanel from '@/features/results/ResultsPanel';
@@ -27,7 +18,9 @@ import HeaderBar from './HeaderBar';
 import HealthNotice from './HealthNotice';
 import LazyModals from './LazyModals';
 import SidebarContent, { sidebarTitle } from './SidebarContent';
+import { useAppActions } from './useAppActions';
 import { useLocaApp } from './useLocaApp';
+import { useMarkerInfoWindow } from './useMarkerInfoWindow';
 import { usePins } from './usePins';
 import { useMapFilter } from './useMapFilter';
 import { readSharedView, useShareUrl } from './useShareUrl';
@@ -40,7 +33,6 @@ import AnswerNotice from '@/features/profile/AnswerNotice';
 
 export default function AppShell() {
   const { t } = useI18n();
-  const toast = useToast();
   const app = useLocaApp();
   const auth = useAuth();
   const { submit, remove, loading: submitting } = useMarkerSubmit();
@@ -61,184 +53,22 @@ export default function AppShell() {
   );
   const busy = submitting || requestSubmit.loading || search.loading || app.catalog.loading;
 
-  // インフォウィンドウ内のボタンは CustomEvent 経由で受け取る
-  useEffect(() => installInfoWindowDelegate(), []);
-  useEffect(() => {
-    const onAction = (e: Event) => {
-      const { action, markerId } = (e as CustomEvent<InfoActionDetail>).detail;
-      const marker = app.catalog.markers.find((m) => m.id === markerId);
-      if (!marker) return;
-      app.setSelectedMarker(marker);
-      app.openModal(action === 'details' ? 'videoDetails' : 'report');
-    };
-    window.addEventListener(LOCA_INFO_EVENT, onAction);
-    return () => window.removeEventListener(LOCA_INFO_EVENT, onAction);
-  }, [app]);
-
-  // マーカーを選んだらインフォウィンドウを開く（要件 3.5 の排他表示）
-  useEffect(() => {
-    if (app.mapMode === MapMode.EDIT && app.selectedMarker) {
-      app.services.map.openInfoWindow({
-        position: { lat: app.selectedMarker.lat, lng: app.selectedMarker.lng },
-        html: buildMarkerInfoHtml(app.selectedMarker, {
-          openYoutube: t.details.openYoutube,
-          report: t.actions.report,
-          details: t.details.btnLabel,
-        }),
-      });
-    }
-  }, [app.selectedMarker, app.mapMode, t]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const closeMobileSidebar = useCallback(() => {
-    if (window.innerWidth < 768) app.setSidebarOpen(false);
-  }, [app]);
-
-  const handleSearch = useCallback(async () => {
-    closeMobileSidebar();
-    if (app.searchTarget === 'map') {
-      const error = await search.searchPlace(app.searchQuery, app.catalog.markers);
-      if (error) toast.error(error);
-      return;
-    }
-    await search.searchMarkers(app.searchQuery, app.catalog.markers);
-  }, [app, search, toast, closeMobileSidebar]);
-
-  const handleSubmitMarker = useCallback(async () => {
-    if (!app.tempPos) {
-      toast.info(t.post.needPlace);
-      return;
-    }
-    const result = await submit({
-      form: app.form,
-      existing: app.catalog.markers,
-      equipment: app.catalog.equipment,
-      editing: app.editing,
-    });
-    if (!result) return; // 実行中の 2 回目の押下
-    if (!result.ok) {
-      toast.error(result.message);
-      return;
-    }
-    toast.success(result.message);
-    if (result.saved) app.catalog.upsertMarker(result.saved);
-    app.resetToSearch();
-  }, [app, submit, toast]);
-
-  /** 本人の撮影リクエストの取り下げ（熱量が戻る）。取り下げた分は集計から外す。 */
-  const handleWithdrawRequests = useCallback(
-    async (entries: { id: string; heat: number }[]) => {
-      const result = await requestSubmit.withdraw(entries);
-      if (!result) return; // 実行中の 2 回目の押下（取り下げ済みのものを消そうとして拒否されるのを防ぐ）
-      app.catalog.removeRequestEntryIds(result.removedIds);
-      if (!result.ok) {
-        toast.error(result.message);
-        return;
-      }
-      toast.success(result.message);
-      app.resetToSearch();
-    },
-    [app, requestSubmit, toast],
-  );
-
-  /** 投稿タブのパネルからのログイン。 */
-  const handleSignIn = useCallback(async () => {
-    try {
-      if (await auth.signIn()) toast.success(t.auth.signedIn);
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : String(e));
-    }
-  }, [auth, toast, t]);
-
-  /** 本人のマーカーの論理削除（要件 3.x）。元に戻せないので確認を挟む。 */
-  const handleDeleteMarker = useCallback(async () => {
-    const marker = app.selectedMarker;
-    if (!marker || !window.confirm(t.store.confirmDelete)) return;
-    const result = await remove(marker);
-    if (!result) return;
-    if (!result.ok) {
-      toast.error(result.message);
-      return;
-    }
-    toast.success(result.message);
-    app.catalog.removeMarker(marker.id);
-    app.resetToSearch();
-  }, [app, remove, toast, t]);
-
-  const handleSubmitRequest = useCallback(async () => {
-    if (!app.tempPos) {
-      toast.info(t.post.needPlace);
-      return;
-    }
-    const result = await requestSubmit.submit(app.requestForm, app.tempPos);
-    if (!result) return;
-    if (!result.ok) {
-      toast.error(result.message);
-      return;
-    }
-    toast.success(result.message);
-    if (result.saved) app.catalog.addRequestEntries([result.saved]);
-    app.resetToSearch();
-  }, [app, requestSubmit, toast, t]);
-
-  const copyLink = useCallback(
-    async (url: string) => {
-      try {
-        await navigator.clipboard.writeText(url);
-        toast.info(t.actions.linkCopied);
-      } catch (e) {
-        console.error('[loca] リンクをコピーできませんでした', e);
-        toast.error(t.actions.linkCopyFailed);
-      }
-    },
-    [t, toast],
-  );
-
-  const handleShare = useCallback(async () => {
-    if (!app.selectedMarker && !app.selectedRequest) return;
-    // 今の URL には地図フィルタと選択中のマーカー（撮影リクエストの地点）が載っている（T42・T84）。開いた人に同じ地図を見せる
-    await copyLink(window.location.href);
-  }, [app.selectedMarker, app.selectedRequest, copyLink]);
-
-  /** 結果パネルの行の「共有」。今の地図フィルタのまま、その行のマーカーを開く URL を渡す（T42 と同じ形） */
-  const handleShareRow = useCallback(
-    (markerId: string) => {
-      const { origin, pathname, search, hash } = window.location;
-      void copyLink(`${origin}${pathname}${encodeSharedView({ filter: mapFilter.filter, markerId }, search)}${hash}`);
-    },
-    [copyLink, mapFilter.filter],
-  );
+  useMarkerInfoWindow(app);
+  const {
+    closeMobileSidebar,
+    handleSearch,
+    handleSubmitMarker,
+    handleWithdrawRequests,
+    handleSignIn,
+    handleDeleteMarker,
+    handleSubmitRequest,
+    handleShare,
+    handleShareRow,
+    handleReportSubmit,
+    reportSubmitting,
+  } = useAppActions({ app, auth, search, requestSubmit, submit, remove, filter: mapFilter.filter });
 
   const range = useRangeSelect(app, search, mapFilter.markers, closeMobileSidebar);
-
-  /** 通報（要件 3.8）。Firestore に保存し、管理者が対応するまでマーカーは表示したまま。 */
-  const report = useExclusive();
-  const handleReportSubmit = useCallback(
-    async (reasons: ReportReason[], detail: string) => {
-      const marker = app.selectedMarker;
-      const store = app.services.reportStore;
-      if (!marker) return;
-      if (!store) {
-        toast.error(t.actions.reportUnavailable);
-        return;
-      }
-      if (!auth.user) {
-        toast.info(t.actions.reportLogin);
-        return;
-      }
-      const result = await report.exclusive(async () => {
-        try {
-          return await store.submit({ markerId: marker.id, reasons, detail });
-        } catch (e) {
-          toast.error(e instanceof Error ? e.message : String(e));
-          return null;
-        }
-      });
-      if (!result) return;
-      toast.success(result === 'created' ? t.actions.reportSent : t.actions.reportUpdated);
-      app.openModal('report', false);
-    },
-    [app, auth.user, report, t, toast],
-  );
 
   const jump = useCallback((pos: LatLng) => app.jumpTo(pos), [app]);
   const sidebarOffset = SIDEBAR_RAIL_WIDTH + (app.sidebarOpen ? SIDEBAR_PANEL_WIDTH : 0);
@@ -378,7 +208,7 @@ export default function AppShell() {
       <ReportModal
         open={app.modals.report}
         official={!!app.selectedMarker?.official}
-        submitting={report.loading}
+        submitting={reportSubmitting}
         onClose={() => app.openModal('report', false)}
         onSubmit={handleReportSubmit}
       />

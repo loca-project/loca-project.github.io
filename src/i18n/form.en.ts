@@ -1,0 +1,41 @@
+/** 投稿と編集のフォームの英語リソース。en.ts の form に入る。 */
+
+import type { formJa } from './form.ja';
+import type { DeepPartial } from './deepPartial';
+
+export const formEn: DeepPartial<typeof formJa> = {
+  url: 'YouTube URL *',
+  lat: 'Latitude',
+  lng: 'Longitude',
+  equipment: 'Equipment',
+  maker: 'Manufacturer',
+  series: 'Series',
+  model: 'Model',
+  category: 'Category',
+  selectCategory: 'Select category',
+  selectMaker: 'Select manufacturer',
+  selectSeries: 'Select series',
+  selectModel: 'Select model',
+  keyword: 'Keyword',
+  searchPlaceholder: 'Search by place or title...',
+  cancel: 'Cancel',
+  search: 'Search',
+  processing: 'Checking...',
+  aiReadAs: 'AI read as: {tags}',
+  apply: 'Apply',
+  mapTab: 'Map',
+  markerTab: 'Marker',
+  clickHint: 'Use the Post tab on the left to add markers or shooting requests',
+  jumpToMap: 'Jump to map',
+  selectArea: 'Start area selection',
+  clearArea: 'Clear area selection',
+  tabRegister: 'Submit marker',
+  tabRequest: 'Shooting request',
+  reqHeat: 'Heat',
+  unselected: 'Not selected',
+  totalHeat: 'Total heat',
+  viewRequests: 'See the breakdown',
+  addRequest: 'Request a shoot here',
+  postVideo: 'Post a video here',
+  relatedVideos: 'Find nearby videos',
+};
