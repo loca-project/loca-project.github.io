@@ -52,8 +52,8 @@ export interface OfficialSource {
 /**
  * 動画メタデータ。
  *
- * Google API を使わないため、取得できるのは YouTube oEmbed が返す 3 項目だけ。
- * 再生数・投稿日・再生時間は取得手段が無いので、この型には持たない。
+ * 登録のときに YouTube oEmbed で取る 3 項目だけ。
+ * 再生数・投稿日・再生時間は毎晩 Actions が取り、YoutubeStats に持つ（ADR 0017）。
  */
 export interface VideoMeta {
   title: string;
@@ -93,7 +93,7 @@ export interface MarkerData {
   prefecture?: string;
   city?: string;
 
-  /** 投稿者の表示名（プロフィールが入るまでは uid から作る仮の名前）。権限の判定には使わない */
+  /** 投稿者の表示名（ニックネーム。ADR 0019）。権限の判定には使わない */
   createdBy: string;
   /** 投稿者の Firebase の uid。本人かどうかの判定に使う（ADR 0012） */
   ownerUid?: string;

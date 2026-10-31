@@ -33,8 +33,8 @@
 | `components/AdminMode/*.tsx` | 12 ファイル | `src/features/admin/*.tsx`（10 ファイル） | タブ構成を整理（下記） |
 | `equipment_data.json` | 28 | `public/data/equipment.json` | 4 段に作り直した。3 時間ごとの機器の同期がコードの既定と管理者の編集から作る（ADR 0018・0025） |
 | `docs/REQUIREMENTS.md` | 467 | `project/docs/10〜50-requirements-*.md` | 章ごとに分割＋差分注記 |
-| `firebase.json` | 16 | `deploy/firebase/firebase.json` | 配信先ごとの設定を `deploy/` に隔離 |
-| `.github/workflows/firebase-hosting-*.yml` | 2 ファイル | `deploy/github-pages/deploy.yml` | 配信先未定のため Pages 版を用意 |
+| `firebase.json` | 16 | `deploy/firebase/firebase.json` | 配信先ごとの設定を `deploy/` に隔離（のちに `deploy/` を削除。下の削除の表） |
+| `.github/workflows/firebase-hosting-*.yml` | 2 ファイル | `deploy/github-pages/deploy.yml` | 配信先未定のため Pages 版を用意（のちに `.github/workflows/` へ移した） |
 | `src/counter.js`, `src/main.js`, `src/style.css`, `src/javascript.svg` | — | **移植せず** | Vite テンプレートの残骸で未使用 |
 | `dist/`, `.firebase/` | — | **移植せず** | ビルド成果物 |
 | `.env.local`（キー入り） | 1 | `.env.example`（プレースホルダのみ） | 下記「持ち込まなかったもの」参照 |
@@ -100,7 +100,7 @@
 
 | 削除したもの | 理由 |
 |---|---|
-| `src/adapters/firebase/**`（9 ファイル） | Firebase 廃止 |
+| `src/adapters/firebase/**`（9 ファイル） | Firebase 廃止（のちに ADR 0010 で戻した） |
 | `src/adapters/local/**`（10 ファイル） | データベースを持たない設計に変更。公開データは静的 JSON |
 | `src/adapters/map/google.ts` | Google Maps 廃止 |
 | `src/adapters/geocode/google.ts` | Google API 廃止 |
