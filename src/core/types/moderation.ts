@@ -2,6 +2,8 @@
 
 export type ReportReason =
   | 'copyright'
+  /** 公式の紹介の掲載の取り下げの依頼（ADR 0036） */
+  | 'takedown'
   | 'illegal'
   | 'misleading_location'
   | 'disinformation'

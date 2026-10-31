@@ -47,6 +47,8 @@ describe('summarizePosters', () => {
   });
 
   it('名前はいちばん新しく登録したマーカーのもの', () => {
+    const official = summarizePosters([marker('1', 'loca-official', 'Loca 運営', 9, { official: { provider: '霧島市', sourceUrl: 'https://example.com/' } }), marker('2', 'u', 'ふつう', 1)]);
+    assert.deepEqual(official.map((r) => r.uid), ['u']); // 公式の紹介は投稿者に数えない（ADR 0036）
     const rows = summarizePosters([marker('1', 'u', '新しい名前', 9), marker('2', 'u', '古い名前', 1)]);
     assert.equal(rows[0].name, '新しい名前');
   });

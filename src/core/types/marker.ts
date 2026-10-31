@@ -43,6 +43,12 @@ export interface Equipment {
   model: string;
 }
 
+/** 公式の紹介の出所。提供元は YouTube の公式チャンネルの持ち主、根拠はそれを公式と確かめたページ。 */
+export interface OfficialSource {
+  provider: string;
+  sourceUrl: string;
+}
+
 /**
  * 動画メタデータ。
  *
@@ -98,6 +104,8 @@ export interface MarkerData {
   deleted?: boolean;
   /** 応えた撮影リクエストの ID（作成のときだけ付く。ADR 0028） */
   answers?: string[];
+  /** 公式の紹介（提供元と根拠のページ）。運営が登録したマーカーにだけある。利用者の投稿の順位には数えない（ADR 0036） */
+  official?: OfficialSource;
   /** Loca のいいねの件数。毎晩の同期が公開データにだけ入れる（0 件は無い。最大 1 日遅れ。T92）。YouTube の高評価数（youtube.likeCount）とは別 */
   likes?: number;
 }

@@ -13,6 +13,8 @@ const PUBLIC_KEYS = [
   'prefecture', 'city', 'ownerUid', 'createdBy', 'createdAt', 'updatedAt',
   // 応えた撮影リクエストの ID（依頼者のブラウザが「届きました」を探す。ADR 0028）
   'answers',
+  // 公式の紹介の提供元と根拠のページ（ADR 0036）
+  'official',
 ];
 
 const pick = (row) => Object.fromEntries(PUBLIC_KEYS.filter((k) => row[k] !== undefined).map((k) => [k, row[k]]));

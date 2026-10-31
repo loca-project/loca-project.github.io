@@ -47,7 +47,7 @@ export default function ActivityPanel({ items, now, onSelect }: ActivityPanelPro
               </span>
               <span className="truncate text-[11px] text-gray-500">
                 {item.kind === 'video'
-                  ? interpolate(at.video, { poster: item.poster })
+                  ? interpolate(item.official ? at.videoOfficial : at.video, { poster: item.poster })
                   : interpolate(at.request, { heat: item.heat })}
               </span>
             </span>

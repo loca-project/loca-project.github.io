@@ -44,6 +44,13 @@ describe('recentActivity', () => {
     assert.equal(item.heat, 4);
     assert.equal(item.place, '京都府 京都市');
   });
+  it('公式の紹介は投稿者ではなく提供元を出す（ADR 0036）', () => {
+    const [item] = recentActivity([marker('m', 10, { createdBy: 'Loca 運営', official: { provider: '霧島市', sourceUrl: 'https://example.com/' } })], []);
+    assert.equal(item.poster, '霧島市');
+    assert.equal(item.official, true);
+    assert.equal(recentActivity([marker('m', 10)], [])[0].official, undefined);
+  });
+
   it('既定で 20 件まで', () => {
     const many = Array.from({ length: 30 }, (_, i) => marker(`m${i}`, i));
     const list = recentActivity(many, []);

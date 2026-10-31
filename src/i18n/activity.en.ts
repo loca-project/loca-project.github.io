@@ -7,6 +7,7 @@ export const activityEn: DeepPartial<typeof activityJa> = {
   tab: 'Recent',
   title: 'Recent activity',
   video: '{poster} posted a video',
+  videoOfficial: 'Official video: {poster}',
   request: 'Filming request (heat {heat})',
   noPlace: 'Unknown place',
   empty: 'No posts yet.',

@@ -36,6 +36,13 @@ describe('buildFeed', () => {
     assert.match(xml, /東京都 台東区 \/ A &amp; B \/ 投稿: たろう/);
   });
 
+  it('公式の紹介は、投稿者ではなく提供元を出す（ADR 0036）', () => {
+    const { xml } = buildFeed({ generatedAt: 0, markers: [{ id: 'm', title: 'x', youtubeUrl: 'https://www.youtube.com/watch?v=a', createdAt: 0, prefecture: '鹿児島県',
+      createdBy: 'Loca 運営', official: { provider: '霧島市', sourceUrl: 'https://example.com/' } }] });
+    assert.match(xml, /公式の紹介: 霧島市/);
+    assert.doesNotMatch(xml, /投稿: Loca 運営/);
+  });
+
   it('マーカーが無くても、項目の無い正しい RSS を返す', () => {
     const { xml, items } = buildFeed({ markers: [], generatedAt: 0 });
     assert.equal(items, 0);

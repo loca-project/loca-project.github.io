@@ -5,7 +5,7 @@
 
 import React from 'react';
 import type { MarkerData } from '@/core/types';
-import { formatCount, formatDate, formatDuration } from '@/core/logic/format';
+import { formatCount, formatDate, formatDuration, hostOf } from '@/core/logic/format';
 import { TAG_FIELDS, equipmentCategoryLabel, tagLabel } from '@/core/constants';
 import { equipmentText } from '@/core/logic/equipment';
 import { Button, LinkButton } from '@/shared/components/Controls';
@@ -65,6 +65,12 @@ export default function MarkerDetails({
       <div>
         <p className="text-xs font-bold leading-snug text-gray-800">{marker.title ?? '-'}</p>
         <p className="mt-0.5 text-[11px] text-gray-500">{marker.channelTitle ?? '-'}</p>
+        {marker.official && (
+          <p className="mt-1.5 rounded bg-indigo-50 px-2 py-1 text-[11px] text-indigo-800">
+            <span className="font-bold">{t.official.badge}</span>
+            <span className="mt-0.5 block">{t.official.note}</span>
+          </p>
+        )}
       </div>
 
       <LinkButton variant="danger" href={marker.youtubeUrl} target="_blank" rel="noopener noreferrer">
@@ -89,7 +95,7 @@ export default function MarkerDetails({
           <Row key={field} label={t.tags[field]} value={tagLabel(marker.tags?.[field], lang) || '-'} />
         ))}
         {marker.memo && <Row label={t.tags.memo} value={marker.memo} />}
-        <Row label={t.form.equipment} value={equipment || '-'} />
+        {!marker.official && <Row label={t.form.equipment} value={equipment || '-'} />}
         {/* YouTube への投稿日は、Loca への登録日と取り違えないよう、いつも行を出す。
             再生数などと同じく毎晩 Actions が取る（ADR 0017）。まだ無ければ案内を出す */}
         <Row label={t.details.publishedAt} value={publishedLabel(marker, t)} />
@@ -102,6 +108,19 @@ export default function MarkerDetails({
         ) : (
           <Row label={t.details.views} value={t.details.statsPending} />
         )}
+        {marker.official ? (
+          <>
+            <Row label={t.official.provider} value={marker.official.provider} />
+            <Row
+              label={t.official.source}
+              value={
+                <a href={marker.official.sourceUrl} target="_blank" rel="noopener noreferrer" className="font-bold text-indigo-600 underline">
+                  {hostOf(marker.official.sourceUrl)}
+                </a>
+              }
+            />
+          </>
+        ) : (
         <Row
           label={t.details.contributor}
           value={
@@ -114,6 +133,7 @@ export default function MarkerDetails({
             )
           }
         />
+        )}
         <Row label={t.form.lat} value={marker.lat.toFixed(6)} />
         <Row label={t.form.lng} value={marker.lng.toFixed(6)} />
       </dl>

@@ -10,7 +10,9 @@
         && d.nickname.matches('[^\\r\\n/]+')
         && d.nickname.trim() == d.nickname
         && !(d.nickname in ['.', '..'])
-        && !d.nickname.matches('__.*__');
+        && !d.nickname.matches('__.*__')
+        // 運営の名前（公式の紹介の投稿者。ADR 0036）は名乗らせない
+        && !d.nickname.lower().matches('.*loca.*運営.*');
     }
 
     // 公開プロフィールの YouTube チャンネル（T55・ADR 0029）: チャンネル ID（UC＋22 字）か @ハンドル（3〜30 字。日本語なども通す）

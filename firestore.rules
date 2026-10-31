@@ -122,7 +122,9 @@ service cloud.firestore {
           // 応えた撮影リクエストの ID（T43）。作成のときだけ付けられる（validAnswers・keepsAnswers）
           'answers',
           // Actions だけが IAM の経路で書く（ADR 0017）。利用者の作成・更新では変えられない（touchesBatchOnly）
-          'youtube', 'deletedReason'])
+          'youtube', 'deletedReason',
+          // 公式の紹介（提供元と根拠のページ）。運営が IAM の経路で書く。利用者は作成でも更新でも付けられない（ADR 0036）
+          'official'])
         && d.keys().hasAll([
           'youtubeUrl', 'videoId', 'lat', 'lng', 'tags', 'equipment',
           'ownerUid', 'createdBy', 'createdAt', 'updatedAt', 'deleted'])
@@ -145,7 +147,19 @@ service cloud.firestore {
         && d.deleted is bool
         && (!('youtube' in d) || d.youtube is map)
         && (!('deletedReason' in d) || d.deletedReason in ['unavailable'])
+        && validOfficial(d)
         && validAnswers(d);
+    }
+
+    // 公式の紹介: 提供元（出所の表示）と、公式と確かめたページ。ページは https か http の URL だけ（画面がリンクにする）
+    function validOfficial(d) {
+      return !('official' in d)
+        || (d.official is map
+          && d.official.keys().hasOnly(['provider', 'sourceUrl'])
+          && d.official.size() == 2
+          && reqString(d.official, 'provider', 1, 100)
+          && reqString(d.official, 'sourceUrl', 1, 500)
+          && d.official.sourceUrl.matches('^https?://[^\\s]+$'));
     }
 
     // 応えた撮影リクエストの ID の一覧（1〜10 件・重複なし・英数字 1〜40 字。T43）。リクエストがあるかは、依頼者が受け取るときに確かめる
@@ -165,9 +179,9 @@ service cloud.firestore {
         || (isAdmin() && resource.data.get('answers', []).hasAll(request.resource.data.get('answers', [])));
     }
 
-    // Actions だけが書く項目（再生数など・消えた動画の論理削除の理由）
+    // Actions と運営の経路だけが書く項目（再生数など・消えた動画の論理削除の理由・公式の紹介）
     function touchesBatchOnly(keys) {
-      return keys.hasAny(['youtube', 'deletedReason']);
+      return keys.hasAny(['youtube', 'deletedReason', 'official']);
     }
 
     // 通常の更新で変えられない項目（createdBy は下の「投稿者名をそろえる」更新だけが、いまのニックネームに変えられる）
@@ -237,8 +251,8 @@ service cloud.firestore {
         && validMarker(request.resource.data)
         && keepsIdentity()
         && keepsAnswers()
-        // 再生数などは誰も変えられない。論理削除の理由は、管理者が復元するときだけ外せる
-        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['youtube'])
+        // 再生数と公式の紹介は誰も変えられない。論理削除の理由は、管理者が復元するときだけ外せる
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['youtube', 'official'])
         && (isAdmin() || !touchesBatchOnly(request.resource.data.diff(resource.data).affectedKeys()))
         // 動画を差し替えるなら、新しい動画の索引を同じバッチで作る
         && (request.resource.data.videoId == resource.data.videoId
@@ -449,7 +463,7 @@ service cloud.firestore {
 
     function validReportBody(d) {
       return d.reasons is list && d.reasons.size() >= 1 && d.reasons.size() <= 5
-        && d.reasons.toSet().hasOnly(['copyright', 'illegal', 'misleading_location', 'disinformation', 'harassment'])
+        && d.reasons.toSet().hasOnly(['copyright', 'takedown', 'illegal', 'misleading_location', 'disinformation', 'harassment'])
         && optString(d, 'detail', 1000);
     }
 
@@ -626,7 +640,9 @@ service cloud.firestore {
         && d.nickname.matches('[^\\r\\n/]+')
         && d.nickname.trim() == d.nickname
         && !(d.nickname in ['.', '..'])
-        && !d.nickname.matches('__.*__');
+        && !d.nickname.matches('__.*__')
+        // 運営の名前（公式の紹介の投稿者。ADR 0036）は名乗らせない
+        && !d.nickname.lower().matches('.*loca.*運営.*');
     }
 
     // 公開プロフィールの YouTube チャンネル（T55・ADR 0029）: チャンネル ID（UC＋22 字）か @ハンドル（3〜30 字。日本語なども通す）

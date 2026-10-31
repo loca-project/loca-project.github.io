@@ -112,8 +112,10 @@ const markers = places.map((spot, i) => {
     prefecture: spot.pref,
     city: spot.city,
     // 投稿者は 3 人に分ける（公開プロフィールの一覧を確かめるため。T82）。本物のマーカーと同じく uid を持つ
-    ownerUid: `seed-user-${(i % 3) + 1}`,
-    createdBy: `loca-seed-${(i % 3) + 1}`,
+    // 最後の 1 件は公式の紹介（ADR 0036）
+    ...(i === places.length - 1
+      ? { ownerUid: 'loca-official', createdBy: 'Loca 運営', official: { provider: 'サンプル市', sourceUrl: 'https://example.com/sns' } }
+      : { ownerUid: `seed-user-${(i % 3) + 1}`, createdBy: `loca-seed-${(i % 3) + 1}` }),
     createdAt: now - i * 86_400_000,
     updatedAt: now - i * 86_400_000,
   };

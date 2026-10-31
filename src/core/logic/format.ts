@@ -1,5 +1,10 @@
 /** 表示整形。ロケール差で壊れないよう用途を限定して持つ。 */
 
+/** リンクの表示に使う宛先の名前。読めない URL は空文字（画面を落とさない）。 */
+export function hostOf(url: string): string {
+  return URL.canParse(url) ? new URL(url).host : '';
+}
+
 export function formatCount(n?: number): string {
   if (n == null) return '-';
   return n.toLocaleString('ja-JP');

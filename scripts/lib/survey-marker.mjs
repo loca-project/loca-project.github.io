@@ -1,11 +1,13 @@
 /**
- * 地域の調査のページから、公開サイトのマーカーを登録・論理削除する（ADR 0035）。
+ * 地域の調査のページから、公開サイトの「公式の紹介」のマーカーを登録・論理削除する（ADR 0035・0036）。
  * オーナーの権限（REST）で書くのでルールを通らない。形が validMarker を満たすことは tests/rules/surveyMarker.test.mjs が確かめる。
  * 書くのは利用者がページのボタンを押したときだけ。タグは利用者が選ぶ（AI に付けさせない。ADR 0014 決定 7）。
+ * 投稿者は運営（誰もログインできない uid。名前はルールが予約する）。利用者の投稿と分け、管理者アカウントの削除でも消えないようにする。
  */
 import { randomBytes } from 'node:crypto';
 import { fromFields } from './firestore-rest.mjs';
 
+export const OPERATOR = { uid: 'loca-official', nickname: 'Loca 運営' };
 export const TAG_VALUES = {
   subject: ['nature', 'townscape', 'festival', 'food', 'transport', 'heritage', 'life'],
   mood: ['lively', 'calm', 'dreamy', 'grand', 'nostalgic', 'thrill'],
@@ -35,9 +37,20 @@ export function cleanTags(input) {
   return tags;
 }
 
+/** 提供元と根拠のページ。出所の明記は県のチャンネルの運用ポリシーの条件でもある（ADR 0036）。 */
+export function cleanOfficial(official) {
+  const provider = String(official?.provider ?? '').trim();
+  const sourceUrl = String(official?.sourceUrl ?? '').trim();
+  if (!provider || provider.length > 100) throw new RegisterError('提供元が正しくありません');
+  if (!/^https?:\/\/\S+$/.test(sourceUrl) || sourceUrl.length > 500 || !URL.canParse(sourceUrl)) throw new RegisterError('根拠のページの URL が正しくありません');
+  return { provider, sourceUrl };
+}
+
 /** マーカーの項目（時刻は除く）。 */
-export function markerFields({ videoId, video, lat, lng, tags, memo, prefecture, city, account }) {
+export function markerFields({ videoId, video, lat, lng, tags, memo, prefecture, city, official }) {
   if (!/^[A-Za-z0-9_-]{11}$/.test(videoId)) throw new RegisterError('動画 ID の形が正しくありません');
+  if (!(lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180)) throw new RegisterError('座標が正しくありません');
+  if (String(prefecture ?? '').length > 20 || String(city ?? '').length > 50) throw new RegisterError('都道府県か市町村の名前が長すぎます');
   const text = String(memo ?? '').trim();
   if (text.length > 80 || /[\r\n]/.test(text)) throw new RegisterError('現地メモは改行なしの 80 字までです');
   return {
@@ -53,8 +66,9 @@ export function markerFields({ videoId, video, lat, lng, tags, memo, prefecture,
     thumbnailUrl: String(video.thumbnailUrl ?? '').slice(0, 500),
     ...(prefecture ? { prefecture } : {}),
     ...(city ? { city } : {}),
-    ownerUid: account.uid,
-    createdBy: account.nickname,
+    official: cleanOfficial(official),
+    ownerUid: OPERATOR.uid,
+    createdBy: OPERATOR.nickname,
     deleted: false,
   };
 }
@@ -71,10 +85,8 @@ export const toFields = (o) => Object.fromEntries(Object.entries(o).map(([k, v])
 
 const now = (fieldPath) => ({ fieldPath, setToServerValue: 'REQUEST_TIME' });
 
-/**
- * base は documents までの URL。getToken はオーナーのトークン、getAccount は { uid, nickname }、oembed は動画 ID → { title, channelTitle, thumbnailUrl }（埋め込めなければ null）。
- */
-export function createRegister({ base, getToken, getAccount, oembed }) {
+/** base は documents までの URL。getToken はオーナーのトークン、oembed は動画 ID → { title, channelTitle, thumbnailUrl }（埋め込めなければ null）。 */
+export function createRegister({ base, getToken, oembed }) {
   const root = base.slice(base.indexOf('/projects/') + 1);
   const request = async (method, url, body) => {
     const res = await fetch(url, {
@@ -88,15 +100,14 @@ export function createRegister({ base, getToken, getAccount, oembed }) {
     return res.json();
   };
   const read = async (collection, id) => {
-    const d = await request('GET', `${base}/${collection}/${id}`);
+    const d = await request('GET', `${base}/${collection}/${encodeURIComponent(id)}`);
     return d ? fromFields(d.fields ?? {}) : null;
   };
   const commit = (writes) => request('POST', `${base}:commit`, { writes });
 
   return {
-    /** 表示中のマーカーの一覧（論理削除を除く）。mine は押した人が消せるか。 */
+    /** 表示中のマーカーの一覧（論理削除を除く）。official は公式の紹介（ここから消せるもの）か。 */
     async list() {
-      const account = await getAccount();
       const rows = [];
       let pageToken = '';
       do {
@@ -104,34 +115,33 @@ export function createRegister({ base, getToken, getAccount, oembed }) {
         for (const doc of body?.documents ?? []) rows.push({ id: doc.name.split('/').pop(), ...fromFields(doc.fields ?? {}) });
         pageToken = body?.nextPageToken ?? '';
       } while (pageToken);
-      return { account: { nickname: account.nickname }, markers: rows.filter((m) => !m.deleted && m.videoId)
-        .map((m) => ({ videoId: m.videoId, markerId: m.id, mine: m.ownerUid === account.uid, createdBy: m.createdBy })) };
+      return { markers: rows.filter((m) => !m.deleted && m.videoId)
+        .map((m) => ({ videoId: m.videoId, markerId: m.id, official: !!m.official, createdBy: m.createdBy })) };
     },
 
-    /** 登録する。同じ動画があれば止まる（videos/{videoId} が無いことを同じ書き込みの条件にする）。 */
-    async add({ videoId, lat, lng, tags, memo, prefecture, city }) {
+    /** 登録する。同じ動画があれば止まる（videos/{videoId} が無いことを同じ書き込みの条件にする）。運営の名前を利用者に取らせない。 */
+    async add({ videoId, lat, lng, tags, memo, prefecture, city, official }) {
       cleanTags(tags);
+      cleanOfficial(official);
       const index = await read('videos', videoId);
       if (index?.blocked) throw new RegisterError('この動画は管理者が禁止しています');
       if (index) throw new RegisterError('この動画はすでに登録されています');
       const video = await oembed(videoId);
       if (!video) throw new RegisterError('この動画は埋め込めません（非公開・削除・埋め込みの禁止）');
-      const account = await getAccount();
-      const fields = markerFields({ videoId, video, lat, lng, tags, memo, prefecture, city, account });
+      const fields = markerFields({ videoId, video, lat, lng, tags, memo, prefecture, city, official });
       const markerId = randomBytes(15).toString('base64url').replace(/[-_]/g, 'x').slice(0, 20);
       await commit([
         { update: { name: `${root}/markers/${markerId}`, fields: toFields(fields) }, currentDocument: { exists: false }, updateTransforms: [now('createdAt'), now('updatedAt')] },
-        { update: { name: `${root}/videos/${videoId}`, fields: toFields({ markerId, ownerUid: account.uid }) }, currentDocument: { exists: false } },
+        { update: { name: `${root}/videos/${videoId}`, fields: toFields({ markerId, ownerUid: OPERATOR.uid }) }, currentDocument: { exists: false } },
       ]);
       return { markerId, videoId };
     },
 
-    /** 論理削除する（サイトの削除と同じ: deleted と updatedAt を変え、索引を外す）。本人のものだけ。 */
+    /** 論理削除する（サイトの削除と同じ: deleted と updatedAt を変え、索引を外す）。公式の紹介だけ。 */
     async remove({ videoId }) {
       const index = await read('videos', videoId);
       if (!index?.markerId) throw new RegisterError('この動画は登録されていません');
-      const account = await getAccount();
-      if (index.ownerUid !== account.uid) throw new RegisterError('別の人が登録した動画は消せません');
+      if (index.ownerUid !== OPERATOR.uid) throw new RegisterError('利用者が投稿した動画は、ここでは消せません');
       if (index.blocked) throw new RegisterError('管理者が禁止した動画は、ここでは消せません');
       await commit([
         { update: { name: `${root}/markers/${index.markerId}`, fields: toFields({ deleted: true }) }, updateMask: { fieldPaths: ['deleted'] },

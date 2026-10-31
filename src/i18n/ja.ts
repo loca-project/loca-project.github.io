@@ -2,6 +2,7 @@
 
 import { activityJa } from './activity.ja';
 import { adminJa } from './admin.ja';
+import { officialJa, reportReasonsJa } from './report.ja';
 
 export const ja = {
   appName: 'Loca',
@@ -294,13 +295,8 @@ export const ja = {
     watchHere: 'ここで再生',
   },
 
-  reportReasons: {
-    reportCopyright: '著作権侵害、または登録者本人以外の動画URLの登録',
-    reportIllegal: '公序良俗に反する、または法令に違反する内容の動画URLの登録',
-    reportLocation: '動画の内容とマーカーの登録位置が著しく異なり、誤認を誘発している',
-    reportFalse: '不正確な情報や虚偽の情報を意図的に拡散する目的での登録',
-    reportHarassment: '不適切な個人情報や誹謗中傷など、第三者への嫌がらせを目的とした情報を含む',
-  },
+  reportReasons: reportReasonsJa,
+  official: officialJa,
 
   tags: {
     subject: '映っているもの',

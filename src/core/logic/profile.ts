@@ -28,6 +28,7 @@ export function isValidNickname(nickname: string): boolean {
     nickname.length >= 1 &&
     nickname.length <= NICKNAME_MAX &&
     nickname === normalizeNickname(nickname) &&
+    !/loca.*運営/i.test(nickname) && // 運営の名前は名乗らせない（ルールと同じ。ADR 0036）
     !nickname.includes('/') &&
     nickname !== '.' &&
     nickname !== '..' &&

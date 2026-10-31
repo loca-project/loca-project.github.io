@@ -2,19 +2,21 @@
 
 import React, { useState } from 'react';
 import type { ReportReason } from '@/core/types';
-import { REPORT_REASONS } from '@/core/constants';
+import { reportReasonsFor } from '@/core/constants';
 import Modal from '@/shared/components/Modal';
 import { Button, Checkbox, TextArea } from '@/shared/components/Controls';
 import { useI18n } from '@/shared/hooks/useI18n';
 
 interface ReportModalProps {
   open: boolean;
+  /** 公式の紹介のマーカーか（理由の選択肢が変わる。ADR 0036） */
+  official?: boolean;
   submitting: boolean;
   onClose: () => void;
   onSubmit: (reasons: ReportReason[], detail: string) => void;
 }
 
-export default function ReportModal({ open, submitting, onClose, onSubmit }: ReportModalProps) {
+export default function ReportModal({ open, official = false, submitting, onClose, onSubmit }: ReportModalProps) {
   const { t } = useI18n();
   const [reasons, setReasons] = useState<ReportReason[]>([]);
   const [detail, setDetail] = useState('');
@@ -45,7 +47,7 @@ export default function ReportModal({ open, submitting, onClose, onSubmit }: Rep
       <p className="mb-3 text-[11px] text-gray-500">{t.actions.reportDesc}</p>
 
       <div className="flex flex-col gap-2">
-        {REPORT_REASONS.map((r) => (
+        {reportReasonsFor(official).map((r) => (
           <Checkbox
             key={r.id}
             checked={reasons.includes(r.id)}

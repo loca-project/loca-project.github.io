@@ -7,6 +7,7 @@ import type { Dictionary } from './ja';
 import type { DeepPartial } from './deepPartial';
 import { activityEn } from './activity.en';
 import { adminEn } from './admin.en';
+import { officialEn, reportReasonsEn } from './report.en';
 
 export const en: DeepPartial<Dictionary> = {
   appName: 'Loca',
@@ -298,13 +299,8 @@ export const en: DeepPartial<Dictionary> = {
     watchHere: 'Play here',
   },
 
-  reportReasons: {
-    reportCopyright: 'Copyright infringement, or a video the submitter does not own',
-    reportIllegal: 'Content that is unlawful or offends public order and morals',
-    reportLocation: 'The video does not match the marker location and is misleading',
-    reportFalse: 'Deliberately inaccurate or false information',
-    reportHarassment: 'Personal information or harassment targeting a third party',
-  },
+  reportReasons: reportReasonsEn,
+  official: officialEn,
 
   tags: {
     subject: 'What is in the video',

@@ -377,6 +377,7 @@ export default function AppShell() {
 
       <ReportModal
         open={app.modals.report}
+        official={!!app.selectedMarker?.official}
         submitting={report.loading}
         onClose={() => app.openModal('report', false)}
         onSubmit={handleReportSubmit}

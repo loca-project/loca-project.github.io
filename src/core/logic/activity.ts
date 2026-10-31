@@ -9,7 +9,7 @@ import type { RequestMarkerData } from '@/core/types/request';
 export const ACTIVITY_LIMIT = 20;
 
 export type ActivityItem =
-  | { kind: 'video'; at: number; markerId: string; title: string; poster: string; place: string; lat: number; lng: number }
+  | { kind: 'video'; at: number; markerId: string; title: string; poster: string; official?: boolean; place: string; lat: number; lng: number }
   | { kind: 'request'; at: number; spotId: string; heat: number; place: string; lat: number; lng: number };
 
 const placeOf = (p: { prefecture?: string; city?: string }) => [p.prefecture, p.city].filter(Boolean).join(' ');
@@ -27,7 +27,9 @@ export function recentActivity(
       at: m.createdAt,
       markerId: m.id,
       title: m.title ?? '',
-      poster: m.createdBy,
+      // 公式の紹介は投稿者ではなく提供元を出す（ADR 0036）
+      poster: m.official?.provider ?? m.createdBy,
+      ...(m.official ? { official: true } : {}),
       place: placeOf(m),
       lat: m.lat,
       lng: m.lng,

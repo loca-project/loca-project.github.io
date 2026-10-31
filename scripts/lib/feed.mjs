@@ -22,7 +22,8 @@ const rfc822 = (ms) => new Date(ms).toUTCString();
 
 function describe(m) {
   const place = [m.prefecture, m.city].filter(Boolean).join(' ');
-  return [place, m.memo, m.createdBy ? `投稿: ${m.createdBy}` : ''].filter(Boolean).join(' / ');
+  const who = m.official ? `公式の紹介: ${m.official.provider}` : m.createdBy ? `投稿: ${m.createdBy}` : '';
+  return [place, m.memo, who].filter(Boolean).join(' / ');
 }
 
 /**

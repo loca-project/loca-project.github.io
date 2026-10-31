@@ -79,7 +79,7 @@ export default function ReportsTab({ markers, onJump }: ReportsTabProps) {
             </div>
             {marker && (
               <p className="text-[11px] text-gray-500">
-                {t.details.contributor}: {marker.createdBy}
+                {marker.official ? `${t.official.provider}: ${marker.official.provider}` : `${t.details.contributor}: ${marker.createdBy}`}
                 {marker.memo ? ` ・ ${t.tags.memo}: ${marker.memo}` : ''}
               </p>
             )}

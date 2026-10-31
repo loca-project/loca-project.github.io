@@ -5,7 +5,7 @@
 
 import React from 'react';
 import type { MarkerData } from '@/core/types';
-import { formatDate } from '@/core/logic/format';
+import { formatDate, hostOf } from '@/core/logic/format';
 import { embedUrl, getYoutubeId } from '@/core/logic/youtube';
 import Modal from '@/shared/components/Modal';
 import { useI18n } from '@/shared/hooks/useI18n';
@@ -57,7 +57,22 @@ export default function VideoDetailsModal({ open, marker, onClose }: VideoDetail
         />
         <Row label={t.details.publishedAt} value={publishedLabel(marker, t)} />
         <Row label={t.details.registeredAt} value={formatDate(marker.createdAt)} />
-        <Row label={t.details.contributor} value={marker.createdBy || '-'} />
+        {marker.official ? (
+          <>
+            <Row label={t.official.badge} value={t.official.note} />
+            <Row label={t.official.provider} value={marker.official.provider} />
+            <Row
+              label={t.official.source}
+              value={
+                <a href={marker.official.sourceUrl} target="_blank" rel="noopener noreferrer" className="font-bold text-indigo-600 underline">
+                  {hostOf(marker.official.sourceUrl)}
+                </a>
+              }
+            />
+          </>
+        ) : (
+          <Row label={t.details.contributor} value={marker.createdBy || '-'} />
+        )}
       </dl>
 
       <a

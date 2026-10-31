@@ -4,6 +4,7 @@ export const activityJa = {
   tab: '最近',
   title: '最近のアクティビティ',
   video: '{poster} が動画を投稿',
+  videoOfficial: '公式の紹介: {poster}',
   request: '撮影リクエスト（熱量 {heat}）',
   noPlace: '場所不明',
   empty: 'まだ投稿がありません。',

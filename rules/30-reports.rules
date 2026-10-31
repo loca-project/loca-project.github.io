@@ -4,7 +4,7 @@
 
     function validReportBody(d) {
       return d.reasons is list && d.reasons.size() >= 1 && d.reasons.size() <= 5
-        && d.reasons.toSet().hasOnly(['copyright', 'illegal', 'misleading_location', 'disinformation', 'harassment'])
+        && d.reasons.toSet().hasOnly(['copyright', 'takedown', 'illegal', 'misleading_location', 'disinformation', 'harassment'])
         && optString(d, 'detail', 1000);
     }
 

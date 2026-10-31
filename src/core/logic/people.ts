@@ -40,11 +40,11 @@ export interface PeopleFilter {
 
 export const DEFAULT_PEOPLE_FILTER: PeopleFilter = { name: '', order: 'posts', tags: {} };
 
-/** 投稿者ごとにまとめる。ownerUid の無いマーカー（見本など）と論理削除は入れない。 */
+/** 投稿者ごとにまとめる。ownerUid の無いマーカー（見本など）・論理削除・公式の紹介（ADR 0036）は入れない。 */
 export function summarizePosters(markers: MarkerData[]): PosterSummary[] {
   const byUid = new Map<string, PosterSummary>();
   for (const m of markers) {
-    if (!m.ownerUid || m.deleted) continue;
+    if (!m.ownerUid || m.deleted || m.official) continue;
     const row = byUid.get(m.ownerUid) ?? {
       uid: m.ownerUid, name: m.createdBy, posts: 0, views: 0, likes: 0, requests: 0, latestAt: m.createdAt,
     };
