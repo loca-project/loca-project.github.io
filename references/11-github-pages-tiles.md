@@ -2,18 +2,25 @@
 
 [10-free-hosting-candidates.md](10-free-hosting-candidates.md) の 9 節を分けたもの。
 
+- 調査日: 2026-09-22
+- 出典:
+  - GitHub Pages の制限: https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits
+  - PMTiles on GitHub Pages の不具合: https://github.com/protomaps/PMTiles/issues/584 , https://github.com/protomaps/PMTiles/discussions/582
+  - Protomaps ダウンロードと extract: https://docs.protomaps.com/basemaps/downloads , https://docs.protomaps.com/pmtiles/cli
+  - PMTiles を静的配信する例: https://thomasgauvin.com/writing/static-protomaps-on-cloudflare/ , https://til.simonwillison.net/gis/pmtiles
+
 タイルを外部サービスに頼らず、**自前の静的ファイルとして持つ**構成が組めるかを検証した。
 
-### 結論
+## 結論
 
 **部分的に成立する。ただし標準手法である PMTiles は GitHub Pages では今日時点で動かない。**
 
-### 実測: GitHub Pages は `.pmtiles` を gzip 化して Range を壊す
+## 実測: GitHub Pages は `.pmtiles` を gzip 化して Range を壊す
 
 PMTiles は HTTP Range リクエストでファイルの一部だけを読む。
 GitHub Pages で実際にホストされている `.pmtiles` に対して測定した（2026-09-22）。
 
-```
+```text
 # Accept-Encoding なし
 Content-Range: bytes 0-15/6601156
 先頭16バイト: 504d54696c6573...   → "PMTiles" マジックナンバー。正常
@@ -34,7 +41,7 @@ Content-Range: bytes 0-15/6602554   ← 全長が変わっている
 「GitHub Pages で PMTiles が使える」と書いた記事も複数あるが、
 上記のとおり**ブラウザから使う経路では失敗する**。
 
-### 成立する 3 つの方法
+## 成立する 3 つの方法
 
 | 方法 | Range を使うか | 規模の目安（日本・推定） | 品質 |
 |---|---|---|---|
@@ -50,7 +57,7 @@ Content-Range: bytes 0-15/6602554   ← 全長が変わっている
 - **C** は完全に依存ゼロだが、ズーム 15（要件 3.6 の地図ジャンプ）で周囲が分からない。
   Loca の用途では基盤地図の代わりにはならない。
 
-### サイズの見積もりと測り方
+## サイズの見積もりと測り方
 
 Protomaps の公開データは planet 全体（z0–15）で約 120GB、
 **ズームを 1 段上げるごとにおよそ倍**になる。日本のみの抽出は推定で
@@ -63,12 +70,12 @@ Protomaps の公開データは planet 全体（z0–15）で約 120GB、
 
 **推定なので、採用前に実測すること。** planet 全体を落とさずに抽出できる。
 
-```
+```text
 pmtiles extract https://build.protomaps.com/<日付>.pmtiles japan.pmtiles \
   --bbox=122.9,24.0,146.0,45.8 --maxzoom=12
 ```
 
-### 推奨
+## 推奨
 
 **タイルの実体だけ Cloudflare R2 に置き、アプリは GitHub Pages のままにする。**
 

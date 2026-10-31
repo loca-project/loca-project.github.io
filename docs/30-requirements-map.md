@@ -84,7 +84,7 @@
 
 | 項目 | 保存先 | キー：日本語 / English |
 | :--- | :--- | :--- |
-| 映っているもの | `tags.subject` | `nature`: 自然・景色 / Nature & scenery、`townscape`: 街並み・建物 / Streets & buildings、`festival`: 祭り・イベント / Festivals & events、|
+| 映っているもの | `tags.subject` | `nature`: 自然・景色 / Nature & scenery、`townscape`: 街並み・建物 / Streets & buildings、`festival`: 祭り・イベント / Festivals & events |
 | 映っているもの（続き） | `tags.subject` | `food`: 食 / Food、`transport`: 乗り物・交通 / Transport、`heritage`: 史跡・文化 / History & culture、`life`: 暮らし・人 / Everyday life |
 | 雰囲気 | `tags.mood` | `lively`: 賑やか / Lively、`calm`: 穏やか / Calm、`dreamy`: 幻想的 / Dreamy、`grand`: 壮大 / Grand、`nostalgic`: 懐かしい / Nostalgic、`thrill`: スリル / Thrilling |
 | 撮影の季節 | `tags.season` | `spring`: 春、`summer`: 夏、`autumn`: 秋、`winter`: 冬 |

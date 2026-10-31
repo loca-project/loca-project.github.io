@@ -103,7 +103,7 @@
 | バンドルはチャンク 500kB 以内 | 維持。`vite.config.ts` の `manualChunks` でベンダを分割し、未使用アダプタは動的 import でロードしない | — |
 | Google Maps はメインバンドルに含める | MapLibre を既定にし、地図ライブラリは独立チャンク（動的 import）に変更 | 地図エンジンを差し替え可能にするため |
 | 定時バッチは cron / Firebase Functions | GitHub Actions（`sync-firestore.yml`）が毎日 0:00 JST に Node のスクリプトを動かす | Cloud Functions は請求先が必須で使えないため |
-| （同上）動かすスクリプト | `scripts/refresh-youtube.mjs`・`sync-firestore.mjs`・`purge-deleted.mjs` | |
+| （同上）動かすスクリプト | `scripts/refresh-youtube.mjs`・`sync-firestore.mjs`・`purge-deleted.mjs` | 同上 |
 | `markers.json` ベース + Firestore 差分 | 維持。ベースは `public/data/markers.json`、差分は `MarkerStorePort.subscribeChanges` の購読（ADR 0013）。バックエンドが落ちればベースだけで縮退運転する | 可用性の要求に直結するため |
 | レートリミット（IP あたり 10 回/分） | 利用者単位をセキュリティルールで実装。マーカーを書くバッチ（といいねを付ける書き込み。ADR 0024）で `rateLimits/{uid}` の印を更新させ、直前から 6 秒以上あいていないと拒否する（ADR 0012）。**IP 単位の遮断は未実装** | 静的配信では IP を判定できない。配信先の WAF で行う |
 
@@ -143,7 +143,7 @@
 | 1.1 Google 認証 | Firebase Auth の Google ログイン（ポップアップ方式） | 実装済み。プロフィール（ニックネームと同意の記録）は `users/{uid}`、ほかのユーザーに見せる任意の YouTube チャンネルは `publicProfiles/{uid}`（ADR 0029）。未登録では投稿できず、投稿者名はニックネーム（ADR 0019） |
 | 1.1 管理者モード | Firestore の `admins/{uid}` とセキュリティルールで判定 | ルールと管理者の登録（`npm run admin:add`）、管理者モードの画面（T27・T59〜T61）とも実装済み |
 | 1.3 定時バッチ | GitHub Actions が Firestore を読み、`markers.json`・`requests.json` を毎晩、`equipment.json` を 3 時間ごとに再生成 | 実装済み（`sync-firestore.yml`・機器は `sync-equipment.yml`。YouTube API での更新は T24） |
-| 1.3 定時バッチの理由 | Cloud Functions は請求先が必須で使えない | |
+| 1.3 定時バッチ（Cloud Functions を使わない理由） | 請求先が必須で使えない | 実装済み |
 | 1.3 レートリミット | 利用者単位はセキュリティルールで実装。IP 単位は引き続き実装できない | 実装済み（6 秒間隔。ADR 0012） |
 | 1.4 ベース JSON ＋ リアルタイム差分 | 元の要件どおり。差分は Firestore の `onSnapshot` | 実装済み。`markers.json` の `syncedAt` より後に `updatedAt` が変わった行だけを購読する（ADR 0013） |
 
