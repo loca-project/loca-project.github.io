@@ -105,6 +105,16 @@ describe('調査のページからの登録', () => {
     await reg.add(input);
   });
 
+  it('動画が消えて毎晩の更新が外した公式の紹介は、一覧に unavailable で出る。人が外した分は出ない（ADR 0037）', async () => {
+    const { markerId } = await reg.add(input);
+    await seed(env, (db) => updateDoc(doc(db, 'markers', markerId), { deleted: true, deletedReason: 'unavailable', updatedAt: serverTimestamp() }));
+    const gone = await reg.list();
+    assert.deepEqual(gone.markers, []);
+    assert.deepEqual(gone.unavailable, [VIDEO]);
+    await seed(env, (db) => updateDoc(doc(db, 'markers', markerId), { deletedReason: deleteField() }));
+    assert.deepEqual((await reg.list()).unavailable, []);
+  });
+
   it('利用者の投稿は、ここからは消せない', async () => {
     await assertSucceeds(stampedWrite(as('alice'), 'alice', 'm1', newMarker('alice', { videoId: VIDEO })));
     await assert.rejects(reg.remove({ videoId: VIDEO }), RegisterError);

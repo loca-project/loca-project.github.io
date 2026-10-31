@@ -115,8 +115,13 @@ export function createRegister({ base, getToken, oembed }) {
         for (const doc of body?.documents ?? []) rows.push({ id: doc.name.split('/').pop(), ...fromFields(doc.fields ?? {}) });
         pageToken = body?.nextPageToken ?? '';
       } while (pageToken);
-      return { markers: rows.filter((m) => !m.deleted && m.videoId)
-        .map((m) => ({ videoId: m.videoId, markerId: m.id, official: !!m.official, createdBy: m.createdBy })) };
+      const live = rows.filter((m) => !m.deleted && m.videoId);
+      const liveIds = new Set(live.map((m) => m.videoId));
+      return {
+        markers: live.map((m) => ({ videoId: m.videoId, markerId: m.id, official: !!m.official, createdBy: m.createdBy })),
+        // 動画が消えて毎晩の更新が外した公式の紹介（deletedReason: unavailable。ADR 0037）。ページで「登録」に戻して見せない
+        unavailable: [...new Set(rows.filter((m) => m.deleted && m.official && m.deletedReason === 'unavailable' && m.videoId && !liveIds.has(m.videoId)).map((m) => m.videoId))],
+      };
     },
 
     /** 登録する。同じ動画があれば止まる（videos/{videoId} が無いことを同じ書き込みの条件にする）。運営の名前を利用者に取らせない。 */

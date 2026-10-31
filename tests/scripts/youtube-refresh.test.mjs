@@ -44,6 +44,12 @@ describe('planRefresh', () => {
     assert.deepEqual(plan.updates.map((u) => u.id), ['a']);
   });
 
+  it('公式の紹介も利用者の投稿と同じに扱い、消えた動画は論理削除の対象にする（ADR 0037）', () => {
+    const official = { ...marker('o'), official: { provider: '鹿児島県', sourceUrl: 'https://example.com/' }, ownerUid: 'loca-official' };
+    assert.deepEqual(planRefresh([official], []).gone, ['o']);
+    assert.deepEqual(planRefresh([official], [item('v_o')]).updates.map((u) => u.id), ['o']);
+  });
+
   it('限定公開は再生できるので残す', () => {
     const plan = planRefresh([marker('a')], [item('v_a', { status: { privacyStatus: 'unlisted', uploadStatus: 'processed' } })]);
     assert.deepEqual(plan.gone, []);
