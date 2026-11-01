@@ -6,7 +6,7 @@
 
 import type { Equipment, MarkerData, TagSelection } from '@/core/types';
 import { RANKING_BASE_LIMIT } from '@/core/types';
-import { matchesEquipment, viewsOf } from './ranking';
+import { matchesEquipment } from './ranking';
 import { matchesTags } from './tags';
 
 /** 投稿者 1 人ぶん。 */
@@ -16,8 +16,6 @@ export interface PosterSummary {
   name: string;
   /** 当たった動画の本数（論理削除したものは数えない） */
   posts: number;
-  /** その動画の再生数の合計（まだ取っていない動画は 0） */
-  views: number;
   /** その動画が受け取った Loca のいいねの合計（毎晩の同期の値。T92） */
   likes: number;
   /** その動画で応えた撮影リクエストの件数（answers。ADR 0028） */
@@ -26,7 +24,7 @@ export interface PosterSummary {
   latestAt: number;
 }
 
-export type PosterOrder = 'posts' | 'views' | 'likes' | 'requests';
+export type PosterOrder = 'posts' | 'likes' | 'requests'; // 再生数は YouTube API のデータなので合計しない（ADR 0038）
 
 /** ユーザーのタブの条件。タグは映っているもの・雰囲気・季節だけを使う。 */
 export interface PeopleFilter {
@@ -46,10 +44,9 @@ export function summarizePosters(markers: MarkerData[]): PosterSummary[] {
   for (const m of markers) {
     if (!m.ownerUid || m.deleted || m.official) continue;
     const row = byUid.get(m.ownerUid) ?? {
-      uid: m.ownerUid, name: m.createdBy, posts: 0, views: 0, likes: 0, requests: 0, latestAt: m.createdAt,
+      uid: m.ownerUid, name: m.createdBy, posts: 0, likes: 0, requests: 0, latestAt: m.createdAt,
     };
     row.posts += 1;
-    row.views += viewsOf(m);
     row.likes += m.likes ?? 0;
     row.requests += m.answers?.length ?? 0;
     if (m.createdAt >= row.latestAt) {
@@ -66,10 +63,10 @@ export function normalizeName(text: string): string {
   return text.normalize('NFKC').toLowerCase().replace(/\s+/g, '');
 }
 
-/** 選んだ値の多い順。同じなら投稿数・再生数、さらに新しい順。 */
+/** 選んだ値の多い順。同じなら投稿数、さらに新しい順。 */
 function compare(order: PosterOrder) {
   return (a: PosterSummary, b: PosterSummary) =>
-    b[order] - a[order] || b.posts - a.posts || b.views - a.views || b.latestAt - a.latestAt;
+    b[order] - a[order] || b.posts - a.posts || b.latestAt - a.latestAt;
 }
 
 /** 条件に当たる動画だけで投稿者ごとに数え、ソート順に RANKING_BASE_LIMIT 人まで。 */

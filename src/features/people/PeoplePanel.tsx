@@ -27,7 +27,7 @@ interface PeoplePanelProps {
 export default function PeoplePanel({ filter, equipment, loading, onChange, onSearch }: PeoplePanelProps) {
   const { t, lang } = useI18n();
   const pt = t.people;
-  const orders: PosterOrder[] = ['posts', 'views', 'likes', 'requests'];
+  const orders: PosterOrder[] = ['posts', 'likes', 'requests'];
 
   return (
     <form

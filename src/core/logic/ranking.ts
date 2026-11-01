@@ -1,8 +1,8 @@
 /**
  * ランキング集計。検索とは別プログラムとして維持する（要件 1.2 / 4.1）。
  *
- * 基準は再生数（要件 4.1・4.3）。再生数は毎晩 Actions が取り、markers.json に入る（ADR 0017）。
- * まだ取っていないマーカーは再生数 0、投稿日は登録日で代わりに数える。
+ * 基準は Loca の登録件数。YouTube API の再生数は合計しない（規約 III.E.2・III.E.4.h。ADR 0038）。公式の紹介は数えない。
+ * 投稿日をまだ取っていないマーカーは、登録日で代わりに数える。
  */
 
 import type {
@@ -29,8 +29,6 @@ const PERIOD_MS: Record<Exclude<PeriodFilter, 'all'>, number> = {
 
 /** 動画の投稿日。まだ取っていなければ登録日（投稿は必ず登録より前なので、新しい側に寄るだけで済む）。 */
 export const publishedAtOf = (m: MarkerData): number => m.youtube?.publishedAt ?? m.createdAt;
-
-export const viewsOf = (m: MarkerData): number => m.youtube?.viewCount ?? 0;
 
 /** 動画の投稿日で絞る。 */
 export function matchesPeriod(m: MarkerData, period: PeriodFilter, now = Date.now()): boolean {
@@ -72,6 +70,7 @@ export function applyFilters(markers: MarkerData[], f: RankingFilter, now = Date
   return markers.filter(
     (m) =>
       !m.deleted &&
+      !m.official &&
       matchesPeriod(m, f.period, now) &&
       matchesLength(m, f.length ?? 'all') &&
       matchesTags(m, f.tags) &&
@@ -92,7 +91,7 @@ export function rankMarkers(markers: MarkerData[], f: RankingFilter, now = Date.
     .slice(0, Math.min(f.limit, RANKING_BASE_LIMIT));
 }
 
-/** キーごとに再生数と件数を合算し、再生数の多い順（同じなら件数、さらに新しい順）に並べる共通処理。 */
+/** キーごとに登録件数を数え、多い順（同じなら新しい順）に並べる共通処理。 */
 function groupBy(
   markers: MarkerData[],
   keyOf: (m: MarkerData) => string | undefined,
@@ -106,7 +105,6 @@ function groupBy(
     const row = buckets.get(label);
     if (row) {
       row.count += 1;
-      row.views += viewsOf(m);
       if (m.createdAt > row.latestAt) {
         row.latestAt = m.createdAt;
         row.sampleMarkerId = m.id;
@@ -117,7 +115,6 @@ function groupBy(
       buckets.set(label, {
         label,
         count: 1,
-        views: viewsOf(m),
         latestAt: m.createdAt,
         sampleMarkerId: m.id,
         lat: m.lat,
@@ -127,16 +124,16 @@ function groupBy(
   }
 
   return [...buckets.values()]
-    .sort((a, b) => b.views - a.views || b.count - a.count || b.latestAt - a.latestAt)
+    .sort((a, b) => b.count - a.count || b.latestAt - a.latestAt)
     .slice(0, Math.min(limit, RANKING_BASE_LIMIT));
 }
 
-/** 地域別ランキング: 都道府県ごとの再生数の合計（要件 4.3）。 */
+/** 地域別ランキング: 都道府県ごとの登録件数（ADR 0038）。 */
 export function rankPrefectures(markers: MarkerData[], f: RankingFilter, now = Date.now()) {
   return groupBy(applyFilters(markers, f, now), (m) => m.prefecture, f.limit);
 }
 
-/** 機器別ランキング: メーカー/シリーズ/モデルの組み合わせごとの再生数の合計。 */
+/** 機器別ランキング: メーカー/シリーズ/モデルの組み合わせごとの登録件数（ADR 0038）。 */
 export function rankEquipment(markers: MarkerData[], f: RankingFilter, now = Date.now()) {
   return groupBy(
     applyFilters(markers, f, now),

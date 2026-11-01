@@ -1,8 +1,8 @@
 /**
  * 検索・ランキングのフィルタ条件。
  *
- * 再生数・動画の投稿日・長さは、毎晩 Actions が YouTube Data API で取る（ADR 0017）。
- * まだ取っていないマーカー（投稿した当日）は、再生数 0・投稿日は登録日で代わりに数える。
+ * 動画の投稿日・長さは、毎晩 Actions が YouTube Data API で取る（ADR 0017）。
+ * まだ取っていないマーカー（投稿した当日）は、投稿日は登録日で代わりに数える。
  */
 
 import type { TagField } from '@/core/constants/tags';
@@ -63,12 +63,10 @@ export const DEFAULT_RANKING_FILTER: RankingFilter = {
 /** 1 画面に載せる上限。これを超える分はフィルタで絞ってもらう。 */
 export const RANKING_BASE_LIMIT = 100;
 
-/** 地域別・機器別ランキングの 1 行（再生数の合計で競い、同じなら件数）。 */
+/** 地域別・機器別ランキングの 1 行（登録件数で競い、同じなら新しい順。ADR 0038）。 */
 export interface GroupRankingRow {
   label: string;
   count: number;
-  /** 再生数の合計 */
-  views: number;
   latestAt: number;
   sampleMarkerId: string;
   lat: number;

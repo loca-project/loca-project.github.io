@@ -155,7 +155,6 @@ export function useSearchAndRanking() {
         title: p.name,
         subtitle: interpolate(pt.stats, {
           posts: formatCount(p.posts),
-          views: formatCount(p.views),
           likes: formatCount(p.likes),
           requests: formatCount(p.requests),
         }),

@@ -22,7 +22,7 @@ const marker = (id, ownerUid, createdBy, createdAt, extra = {}) => ({
   id, ownerUid, createdBy, createdAt, deleted: false, tags: { subject: 'nature', mood: 'calm' }, equipment: NO_EQ, ...extra,
 });
 
-// alice: 2 本（再生 150・いいね 1・応えた 1）。bob: 1 本（再生 500）。carol: 3 本（再生 0・いいね 9・応えた 3）
+// alice: 2 本（いいね 1・応えた 1）。bob: 1 本。carol: 3 本（いいね 9・応えた 3）。再生数は数えない（ADR 0038）
 const MARKERS = [
   marker('a1', 'alice', 'アリス', 1, { youtube: { viewCount: 100 }, likes: 1, tags: { subject: 'townscape', mood: 'lively', season: 'spring' } }),
   marker('a2', 'alice', 'アリス', 5, { youtube: { viewCount: 50 }, answers: ['r1'] }),
@@ -37,13 +37,17 @@ const MARKERS = [
 const rank = (patch) => rankPeople(MARKERS, { ...DEFAULT_PEOPLE_FILTER, ...patch }).map((p) => p.uid);
 
 describe('summarizePosters', () => {
-  it('投稿数・再生数・いいね・応えた撮影リクエストを数え、論理削除と ownerUid の無いものは数えない', () => {
+  it('投稿数・いいね・応えた撮影リクエストを数え、論理削除と ownerUid の無いものは数えない', () => {
     const rows = summarizePosters(MARKERS).sort((a, b) => a.uid.localeCompare(b.uid));
-    assert.deepEqual(rows.map(({ uid, posts, views, likes, requests, latestAt }) => ({ uid, posts, views, likes, requests, latestAt })), [
-      { uid: 'alice', posts: 2, views: 150, likes: 1, requests: 1, latestAt: 5 },
-      { uid: 'bob', posts: 1, views: 500, likes: 0, requests: 0, latestAt: 3 },
-      { uid: 'carol', posts: 3, views: 0, likes: 9, requests: 3, latestAt: 9 },
+    assert.deepEqual(rows.map(({ uid, posts, likes, requests, latestAt }) => ({ uid, posts, likes, requests, latestAt })), [
+      { uid: 'alice', posts: 2, likes: 1, requests: 1, latestAt: 5 },
+      { uid: 'bob', posts: 1, likes: 0, requests: 0, latestAt: 3 },
+      { uid: 'carol', posts: 3, likes: 9, requests: 3, latestAt: 9 },
     ]);
+  });
+
+  it('再生数の合計を持たない（規約 III.E.2・III.E.4.h。ADR 0038）', () => {
+    assert.equal('views' in summarizePosters(MARKERS)[0], false);
   });
 
   it('名前はいちばん新しく登録したマーカーのもの', () => {
@@ -57,7 +61,6 @@ describe('summarizePosters', () => {
 describe('rankPeople', () => {
   it('既定は投稿数の順。ソート順を変えると、その値の多い順', () => {
     assert.deepEqual(rank({}), ['carol', 'alice', 'bob']);
-    assert.deepEqual(rank({ order: 'views' }), ['bob', 'alice', 'carol']);
     assert.deepEqual(rank({ order: 'likes' }), ['carol', 'alice', 'bob']);
     assert.deepEqual(rank({ order: 'requests' }), ['carol', 'alice', 'bob']);
   });
@@ -65,7 +68,7 @@ describe('rankPeople', () => {
   it('タグ（項目の中は OR・間は AND）と撮影機器に当たる動画だけで数える', () => {
     assert.deepEqual(rank({ tags: { mood: ['lively'] } }), ['alice']);
     assert.deepEqual(rank({ tags: { season: ['spring', 'summer'], subject: ['townscape'] } }), ['alice']);
-    assert.deepEqual(rank({ tags: { subject: ['nature'] }, order: 'views' }), ['bob', 'alice', 'carol']);
+    assert.deepEqual(rank({ tags: { subject: ['nature'] } }), ['carol', 'alice', 'bob']);
     const [alice] = rankPeople(MARKERS, { ...DEFAULT_PEOPLE_FILTER, tags: { subject: ['nature'] }, name: 'アリス' });
     assert.equal(alice.posts, 1);
     assert.deepEqual(rank({ equipment: { ...NO_EQ, category: 'drone' } }), ['bob']);

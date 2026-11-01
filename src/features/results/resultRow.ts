@@ -37,13 +37,13 @@ export function rowsFromMarkers(markers: MarkerData[]): ResultRow[] {
   }));
 }
 
-/** 地域別・機器別ランキング（再生数の合計で競う）。 */
+/** 地域別・機器別ランキング（登録件数で競う。ADR 0038）。 */
 export function rowsFromGroups(groups: GroupRankingRow[]): ResultRow[] {
   return groups.map((g) => ({
     id: g.label,
     title: g.label,
     subtitle: formatDate(g.latestAt),
-    metric: `${formatCount(g.views)} 回・${formatCount(g.count)} 件`,
+    metric: `${formatCount(g.count)} 件`,
     position: { lat: g.lat, lng: g.lng },
   }));
 }
