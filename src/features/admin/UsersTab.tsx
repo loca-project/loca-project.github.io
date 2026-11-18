@@ -11,14 +11,14 @@ import { usersMatching } from '@/core/logic/adminUsers';
 import { formatDate } from '@/core/logic/format';
 import { Button, TextInput } from '@/shared/components/Controls';
 import { useExclusive } from '@/shared/hooks/useExclusive';
-import { useI18n } from '@/shared/hooks/useI18n';
+import { useAdminI18n } from './useAdminI18n';
 import { useServices } from '@/shared/hooks/useServices';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useToast } from '@/shared/components/Toast';
 
 /** 1 人分の行。登録日が無くても行を 3 段にして、区画の間で行の高さをそろえる。 */
 function UserLine({ row, children }: { row: AdminUserRow; children?: React.ReactNode }) {
-  const { t } = useI18n();
+  const { t } = useAdminI18n();
   return (
     <li className="border-b border-gray-50 py-2">
       <p className="truncate text-xs font-bold text-gray-800">{row.nickname ?? t.admin.users.noProfile}</p>
@@ -36,7 +36,7 @@ function UserLine({ row, children }: { row: AdminUserRow; children?: React.React
 
 /** 区画。見出しの下に検索欄を置き、ニックネームか uid で絞る。件数は「絞った数 / 全体」。 */
 function Section({ title, rows, render }: { title: string; rows: AdminUserRow[]; render: (row: AdminUserRow) => React.ReactNode }) {
-  const { t } = useI18n();
+  const { t } = useAdminI18n();
   const u = t.admin.users;
   const [query, setQuery] = useState('');
   const shown = usersMatching(rows, query);
@@ -58,7 +58,7 @@ function Section({ title, rows, render }: { title: string; rows: AdminUserRow[];
 
 export default function UsersTab() {
   const { adminStore } = useServices();
-  const { t } = useI18n();
+  const { t } = useAdminI18n();
   const u = t.admin.users;
   const toast = useToast();
   const { loading, exclusive } = useExclusive();

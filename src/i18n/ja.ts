@@ -1,7 +1,6 @@
 /** 日本語リソース。これが基準となる形（en.ts は同じ形を満たす）。 */
 
 import { activityJa } from './activity.ja';
-import { adminJa } from './admin.ja';
 import { formJa } from './form.ja';
 import { profileJa, myPostsJa, posterJa } from './profile.ja';
 import { officialJa, reportReasonsJa } from './report.ja';
@@ -254,8 +253,17 @@ export const ja = {
     registered: '登録',
   },
 
-  // 管理者モード（要件 5・T27〜T61）。中身は admin.ja.ts
-  admin: adminJa,
+  // 管理者モード（要件 5・T27〜T61）。管理画面の外でも使う文言だけ。管理画面の中身は admin.ja.ts（開いたときに読む。T170）
+  admin: {
+    mode: '管理者モード',
+    blocked: {
+      title: 'ログインできません',
+      body: 'このアカウントは登録が制御されています。心当たりがない場合は、サイトの管理者にお問い合わせください。',
+      ok: '閉じる',
+    },
+    exportCsv: 'CSV でエクスポート',
+    exportJson: 'JSON でエクスポート',
+  },
   activity: activityJa,
 
   alerts: {

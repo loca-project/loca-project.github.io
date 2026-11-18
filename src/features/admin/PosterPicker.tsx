@@ -6,7 +6,7 @@
 import React from 'react';
 import type { PosterRow } from '@/core/logic/adminMarkers';
 import { TextInput } from '@/shared/components/Controls';
-import { useI18n } from '@/shared/hooks/useI18n';
+import { useAdminI18n } from './useAdminI18n';
 
 interface PosterPickerProps {
   query: string;
@@ -17,7 +17,7 @@ interface PosterPickerProps {
 }
 
 export default function PosterPicker({ query, posters, owner, onQueryChange, onPick }: PosterPickerProps) {
-  const { t } = useI18n();
+  const { t } = useAdminI18n();
   const total = posters.reduce((sum, p) => sum + p.count, 0);
   const item = (key: string | null, name: string, count: number) => (
     <li key={key ?? '*'}>

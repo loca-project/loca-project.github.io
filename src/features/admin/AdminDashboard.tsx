@@ -11,7 +11,7 @@ import React, { useState } from 'react';
 import type { EquipmentDef, MarkerData, RequestMarkerData } from '@/core/types';
 import Modal from '@/shared/components/Modal';
 import DashboardTabs from '@/shared/components/DashboardTabs';
-import { useI18n } from '@/shared/hooks/useI18n';
+import { useAdminI18n } from './useAdminI18n';
 import StatisticsTab from './StatisticsTab';
 import JobsTab from './JobsTab';
 import UsersTab from './UsersTab';
@@ -37,7 +37,7 @@ interface AdminDashboardProps {
 }
 
 export default function AdminDashboard({ open, markers, requestMarkers, equipment, onClose, onJump, onJumpRequest }: AdminDashboardProps) {
-  const { t } = useI18n();
+  const { t } = useAdminI18n();
   const [tab, setTab] = useState<TabId>('statistics');
 
   return (

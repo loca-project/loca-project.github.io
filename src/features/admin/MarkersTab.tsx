@@ -11,7 +11,7 @@ import { markersOfOwner, postersMatching } from '@/core/logic/adminMarkers';
 import { formatDate, interpolate } from '@/core/logic/format';
 import { tagLabel } from '@/core/constants';
 import { useExclusive } from '@/shared/hooks/useExclusive';
-import { useI18n } from '@/shared/hooks/useI18n';
+import { useAdminI18n } from './useAdminI18n';
 import { useServices } from '@/shared/hooks/useServices';
 import { useToast } from '@/shared/components/Toast';
 import { publishLocalChange } from '@/shared/localChanges';
@@ -27,7 +27,7 @@ interface MarkersTabProps {
 
 export default function MarkersTab({ markers, onJump }: MarkersTabProps) {
   const { adminStore } = useServices();
-  const { t, lang } = useI18n();
+  const { t, lang } = useAdminI18n();
   const mt = t.admin.markers;
   const toast = useToast();
   const { loading, exclusive } = useExclusive();

@@ -8,12 +8,12 @@ import type { MarkerData } from '@/core/types';
 import { logRows } from '@/core/logic/adminMarkers';
 import { formatDateTime, interpolate } from '@/core/logic/format';
 import { TextInput } from '@/shared/components/Controls';
-import { useI18n } from '@/shared/hooks/useI18n';
+import { useAdminI18n } from './useAdminI18n';
 
 const LIMIT = 200;
 
 export default function LogsTab({ markers }: { markers: MarkerData[] }) {
-  const { t } = useI18n();
+  const { t } = useAdminI18n();
   const lt = t.admin.logs;
   const [query, setQuery] = useState('');
   const { rows, total } = useMemo(() => logRows(markers, query, LIMIT), [markers, query]);

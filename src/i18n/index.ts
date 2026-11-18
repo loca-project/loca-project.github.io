@@ -5,6 +5,7 @@
 
 import type { LanguageCode } from '@/core/types';
 import { ja, type Dictionary } from './ja';
+import { merge } from './merge';
 
 const STORAGE_KEY = 'loca.lang';
 
@@ -17,21 +18,6 @@ function detectLanguage(): LanguageCode {
   }
   const nav = typeof navigator !== 'undefined' ? navigator.language : 'ja';
   return nav.toLowerCase().startsWith('en') ? 'en' : 'ja';
-}
-
-/** 未定義キーを日本語で埋めながら深くマージする。 */
-function merge<T>(base: T, override: unknown): T {
-  if (override == null || typeof override !== 'object') return base;
-  const result = { ...(base as Record<string, unknown>) };
-  for (const [key, value] of Object.entries(override as Record<string, unknown>)) {
-    const current = result[key];
-    if (current && typeof current === 'object' && typeof value === 'object' && !Array.isArray(value)) {
-      result[key] = merge(current, value);
-    } else if (value !== undefined) {
-      result[key] = value;
-    }
-  }
-  return result as T;
 }
 
 /**

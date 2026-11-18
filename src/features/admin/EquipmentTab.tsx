@@ -11,7 +11,7 @@ import type { EditedEquipment } from '@/ports';
 import { EQUIPMENT_CATEGORY_KEYS, equipmentCategoryLabel } from '@/core/constants/equipment';
 import { countMakers, makersToText, textToMakers } from '@/core/logic/equipmentText';
 import { formatDateTime, interpolate } from '@/core/logic/format';
-import { useI18n } from '@/shared/hooks/useI18n';
+import { useAdminI18n } from './useAdminI18n';
 import { useServices } from '@/shared/hooks/useServices';
 import { useToast } from '@/shared/components/Toast';
 
@@ -22,7 +22,7 @@ interface EquipmentTabProps {
 
 export default function EquipmentTab({ equipment }: EquipmentTabProps) {
   const { adminStore } = useServices();
-  const { t, lang } = useI18n();
+  const { t, lang } = useAdminI18n();
   const et = t.admin.equipment;
   const toast = useToast();
   const [edited, setEdited] = useState<Record<string, EditedEquipment> | null>(null);

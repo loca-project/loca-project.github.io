@@ -7,11 +7,11 @@ import React, { useEffect, useState } from 'react';
 import type { JobRecord } from '@/ports';
 import { formatDateTime } from '@/core/logic/format';
 import { useServices } from '@/shared/hooks/useServices';
-import { useI18n } from '@/shared/hooks/useI18n';
+import { useAdminI18n } from './useAdminI18n';
 
 export default function JobsTab() {
   const { adminStore } = useServices();
-  const { t } = useI18n();
+  const { t } = useAdminI18n();
   const [jobs, setJobs] = useState<JobRecord[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 

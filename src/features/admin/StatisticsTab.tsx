@@ -5,11 +5,11 @@ import type { MarkerData } from '@/core/types';
 import { computeStatistics, withinRegisteredRange } from '@/core/logic/statistics';
 import { TAG_FIELDS, equipmentCategoryLabel, tagLabel } from '@/core/constants';
 import { Field, TextInput } from '@/shared/components/Controls';
-import { useI18n } from '@/shared/hooks/useI18n';
+import { useAdminI18n } from './useAdminI18n';
 import BarList from '@/shared/components/BarList';
 
 export default function StatisticsTab({ markers }: { markers: MarkerData[] }) {
-  const { t, lang } = useI18n();
+  const { t, lang } = useAdminI18n();
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
 

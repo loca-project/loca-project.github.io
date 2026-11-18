@@ -1,10 +1,9 @@
-/** 管理者モードの英語リソース。en.ts の admin に入る（未定義のキーは日本語にフォールバックする）。 */
+/** 管理者モードの英語リソース。管理画面を開いたときに読む（adminPanel.ts。未定義のキーは日本語にフォールバックする。T170）。 */
 
 import type { adminJa } from './admin.ja';
 import type { DeepPartial } from './deepPartial';
 
 export const adminEn: DeepPartial<typeof adminJa> = {
-  mode: 'Admin mode',
   tabStatistics: 'Statistics',
   tabJobs: 'Scheduled jobs',
   tabUsers: 'Users',
@@ -93,11 +92,6 @@ export const adminEn: DeepPartial<typeof adminJa> = {
     promoted: 'Made an administrator',
     demoted: 'Made a regular user',
   },
-  blocked: {
-    title: 'You cannot sign in',
-    body: 'Registration for this account is restricted. If you think this is a mistake, please contact the site administrator.',
-    ok: 'Close',
-  },
   jobsEmpty: 'No scheduled job has run yet.',
   jobRanAt: 'Last run',
   jobNames: {
@@ -118,8 +112,6 @@ export const adminEn: DeepPartial<typeof adminJa> = {
     likeCounts: 'Like counts erased',
     answerCounts: 'Flames erased',
   },
-  exportCsv: 'Export CSV',
-  exportJson: 'Export JSON',
   periodFrom: 'From',
   periodTo: 'To',
   total: 'Total',

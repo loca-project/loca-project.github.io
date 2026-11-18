@@ -10,7 +10,7 @@ import { REPORT_REASONS } from '@/core/constants';
 import { formatDateTime, interpolate } from '@/core/logic/format';
 import { Button } from '@/shared/components/Controls';
 import { useExclusive } from '@/shared/hooks/useExclusive';
-import { useI18n } from '@/shared/hooks/useI18n';
+import { useAdminI18n } from './useAdminI18n';
 import { useServices } from '@/shared/hooks/useServices';
 import { useToast } from '@/shared/components/Toast';
 import { publishLocalChange } from '@/shared/localChanges';
@@ -22,7 +22,7 @@ interface ReportsTabProps {
 
 export default function ReportsTab({ markers, onJump }: ReportsTabProps) {
   const { reportStore, adminStore } = useServices();
-  const { t } = useI18n();
+  const { t } = useAdminI18n();
   const rt = t.admin.reports;
   const toast = useToast();
   const { loading, exclusive } = useExclusive();

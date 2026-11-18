@@ -1,7 +1,9 @@
-/** 管理者モード（要件 5・T27〜T61）の日本語リソース。ja.ts の admin に入る（ja.ts を 400 行以内に保つため分けた）。 */
+/**
+ * 管理者モード（要件 5・T27〜T61）の日本語リソース。管理画面を開いたときに読む（adminPanel.ts。初期読み込みに入れない。T170）。
+ * 管理画面の外でも使う文言（mode・blocked・exportCsv・exportJson）は ja.ts の admin に置く。
+ */
 
 export const adminJa = {
-  mode: '管理者モード',
   tabStatistics: '統計分析',
   tabJobs: '定期処理',
   tabUsers: 'ユーザー管理',
@@ -95,11 +97,6 @@ export const adminJa = {
     promoted: '管理者にしました',
     demoted: '一般ユーザーに戻しました',
   },
-  blocked: {
-    title: 'ログインできません',
-    body: 'このアカウントは登録が制御されています。心当たりがない場合は、サイトの管理者にお問い合わせください。',
-    ok: '閉じる',
-  },
   jobsEmpty: '定期処理の記録はまだありません。',
   jobRanAt: '最後に動いた日時',
   jobNames: {
@@ -120,8 +117,6 @@ export const adminJa = {
     likeCounts: '消したいいねの件数',
     answerCounts: '消した炎',
   },
-  exportCsv: 'CSV でエクスポート',
-  exportJson: 'JSON でエクスポート',
   periodFrom: '開始',
   periodTo: '終了',
   total: '合計',

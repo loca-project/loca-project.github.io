@@ -10,7 +10,7 @@ import type { MarkerData, RequestMarkerData } from '@/core/types';
 import { requestPosters, requestSpotsOf, type AdminRequestSpot } from '@/core/logic/adminRequests';
 import { formatDate, interpolate } from '@/core/logic/format';
 import { useExclusive } from '@/shared/hooks/useExclusive';
-import { useI18n } from '@/shared/hooks/useI18n';
+import { useAdminI18n } from './useAdminI18n';
 import { useServices } from '@/shared/hooks/useServices';
 import { useToast } from '@/shared/components/Toast';
 import { publishLocalChange } from '@/shared/localChanges';
@@ -27,7 +27,7 @@ interface RequestsTabProps {
 
 export default function RequestsTab({ markers, requestMarkers, onJump }: RequestsTabProps) {
   const { adminStore } = useServices();
-  const { t } = useI18n();
+  const { t } = useAdminI18n();
   const rt = t.admin.requests;
   const toast = useToast();
   const { loading, exclusive } = useExclusive();

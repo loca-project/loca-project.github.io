@@ -6,7 +6,6 @@
 import type { Dictionary } from './ja';
 import type { DeepPartial } from './deepPartial';
 import { activityEn } from './activity.en';
-import { adminEn } from './admin.en';
 import { formEn } from './form.en';
 import { profileEn, myPostsEn, posterEn } from './profile.en';
 import { officialEn, reportReasonsEn } from './report.en';
@@ -256,7 +255,16 @@ export const en: DeepPartial<Dictionary> = {
     registered: 'Registered',
   },
 
-  admin: adminEn,
+  admin: {
+    mode: 'Admin mode',
+    blocked: {
+      title: 'You cannot sign in',
+      body: 'Registration for this account is restricted. If you think this is a mistake, please contact the site administrator.',
+      ok: 'Close',
+    },
+    exportCsv: 'Export CSV',
+    exportJson: 'Export JSON',
+  },
   activity: activityEn,
 
   alerts: {
