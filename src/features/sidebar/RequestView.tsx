@@ -59,7 +59,7 @@ export default function RequestView({
           <i className="fa-solid fa-fire mr-1.5 text-orange-400" />
           {formatCount(marker.totalHeat)}
         </p>
-        <p className="mt-1 text-[11px] text-gray-400">{t.results.count.replace('{count}', formatCount(marker.requestCount))}</p>
+        <p className="mt-1 text-[11px] text-gray-400">{t.request.entries.replace('{count}', formatCount(marker.requestCount))}</p>
         {(marker.prefecture || marker.city) && (
           <p className="mt-1 text-[11px] text-gray-400">{[marker.prefecture, marker.city].filter(Boolean).join(' ')}</p>
         )}

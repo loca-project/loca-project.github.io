@@ -20,6 +20,8 @@ export interface InfoWindowLabels {
   openYoutube: string;
   report: string;
   details: string;
+  /** 題名がまだ無いとき（oEmbed の失敗・毎晩の更新の前）の文言 */
+  noTitle: string;
 }
 
 /**
@@ -29,7 +31,7 @@ export interface InfoWindowLabels {
 export function buildMarkerInfoHtml(marker: MarkerData, labels: InfoWindowLabels): string {
   const videoId = getYoutubeId(marker.youtubeUrl);
   const thumb = marker.thumbnailUrl || (videoId ? thumbnailUrl(videoId) : '');
-  const title = escapeHtml(marker.title ?? '(タイトル未取得)');
+  const title = escapeHtml(marker.title || labels.noTitle);
   const channel = escapeHtml(marker.channelTitle ?? '');
   const url = escapeHtml(marker.youtubeUrl);
 

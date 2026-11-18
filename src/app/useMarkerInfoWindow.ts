@@ -37,6 +37,7 @@ export function useMarkerInfoWindow(app: ReturnType<typeof useLocaApp>) {
           openYoutube: t.details.openYoutube,
           report: t.actions.report,
           details: t.details.btnLabel,
+          noTitle: t.details.noTitle,
         }),
       });
     }

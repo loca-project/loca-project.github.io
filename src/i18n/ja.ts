@@ -40,6 +40,7 @@ export const ja = {
     breakdown: 'このリクエストの中身（熱量の内訳）',
     heatRule: '熱量は 1 人あたり合計 {max} まで使えます（取り下げると戻ります）。',
     noBreakdown: '内訳はありません（古い形式のリクエストです）',
+    entries: '{count}件',
     mine: 'あなたのリクエスト: 熱量 {heat}（{count} 件）',
     withdraw: '自分のリクエストを取り下げる',
     confirmWithdraw: 'この地点のあなたのリクエストを取り下げますか？使った熱量 {heat} が戻ります。',
@@ -179,6 +180,7 @@ export const ja = {
     error: '情報の取得に失敗しました。',
     openYoutube: 'YouTube で開く',
     watchHere: 'ここで再生',
+    noTitle: '(タイトル未取得)',
   },
 
   reportReasons: reportReasonsJa,

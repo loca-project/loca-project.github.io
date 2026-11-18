@@ -45,6 +45,7 @@ export const en: DeepPartial<Dictionary> = {
     breakdown: 'What people asked for (by heat)',
     heatRule: 'You can use up to {max} heat in total (withdrawing returns it).',
     noBreakdown: 'No breakdown (older request format)',
+    entries: '{count} requests',
     mine: 'Your requests: heat {heat} ({count})',
     withdraw: 'Withdraw my requests',
     confirmWithdraw: 'Withdraw your requests at this spot? Heat {heat} will be returned.',
@@ -181,6 +182,7 @@ export const en: DeepPartial<Dictionary> = {
     error: 'Could not load the details.',
     openYoutube: 'Open on YouTube',
     watchHere: 'Play here',
+    noTitle: '(Title not available yet)',
   },
 
   reportReasons: reportReasonsEn,
