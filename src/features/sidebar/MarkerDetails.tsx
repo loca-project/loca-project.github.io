@@ -88,6 +88,8 @@ export default function MarkerDetails({
           {t.actions.report}
         </Button>
       </div>
+      {/* この動画が受け取った炎（ADR 0028 の決定 4・T82。0 なら出ない）。公式の紹介は撮影リクエストと結び付けないので読まない（ADR 0036 の決定 5。T163） */}
+      {!marker.official && <FlameCount markerId={marker.id} />}
       {/* API に基づかない値を並べるときの明示（規約 III.E.4.h。ADR 0038 の追記） */}
       <p className="rounded bg-gray-100 px-2 py-1 text-[11px] text-gray-700">{t.details.locaDataNotice}</p>
 
