@@ -100,6 +100,8 @@ const markers = places.map((spot, i) => {
       : {
           youtube: {
             viewCount: ((i * 7919) % 50000) + 100,
+            // 高評価数を公開していない動画は値が来ない（3 件に 1 件）
+            ...(i % 3 === 0 ? {} : { likeCount: ((i * 131) % 900) + 10 }),
             publishedAt: now - (i * 45 + 3) * 86_400_000,
             durationSec: [95, 250, 600, 1500][i % 4],
             checkedAt: now,

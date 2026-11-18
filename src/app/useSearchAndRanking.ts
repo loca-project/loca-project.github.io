@@ -121,7 +121,7 @@ export function useSearchAndRanking() {
         setResults({
           open: true,
           title: t.headers.gearRanking,
-          rows: rowsFromGroups(rankEquipment(markers, filter)),
+          rows: rowsFromGroups(rankEquipment(markers, filter), t.results.videoCount),
           limitedTo: limited,
         });
         return;
@@ -131,7 +131,7 @@ export function useSearchAndRanking() {
         setResults({
           open: true,
           title: t.headers.requestRanking,
-          rows: rowsFromRequestMarkers(rankRequestSpots(requestMarkers, filter.tags, filter.limit)),
+          rows: rowsFromRequestMarkers(rankRequestSpots(requestMarkers, filter.tags, filter.limit), t.results.requestCount),
         });
         return;
       }
@@ -139,7 +139,7 @@ export function useSearchAndRanking() {
       setResults({
         open: true,
         title: t.headers.regionRanking,
-        rows: rowsFromGroups(rankPrefectures(markers, filter)),
+        rows: rowsFromGroups(rankPrefectures(markers, filter), t.results.videoCount),
         limitedTo: limited,
       });
     },

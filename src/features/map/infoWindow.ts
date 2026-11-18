@@ -1,6 +1,6 @@
 /**
  * インフォウィンドウの HTML 生成（要件 3.5）。
- * 表示は サムネイル・再生数・チャンネル名 の 3 項目と YouTube への導線。
+ * 表示は サムネイル・題名・チャンネル名 の 3 項目と YouTube への導線。再生数は出さない（ADR 0006）。
  */
 
 import type { MarkerData } from '@/core/types';

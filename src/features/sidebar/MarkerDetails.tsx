@@ -88,6 +88,8 @@ export default function MarkerDetails({
           {t.actions.report}
         </Button>
       </div>
+      {/* API に基づかない値を並べるときの明示（規約 III.E.4.h。ADR 0038 の追記） */}
+      <p className="rounded bg-gray-100 px-2 py-1 text-[11px] text-gray-700">{t.details.locaDataNotice}</p>
 
       <dl>
         <Row label={t.filters.prefecture} value={`${marker.prefecture ?? '-'} ${marker.city ?? ''}`} />
@@ -103,6 +105,7 @@ export default function MarkerDetails({
         {marker.youtube ? (
           <>
             <Row label={t.details.views} value={formatCount(marker.youtube.viewCount)} />
+            <Row label={t.details.youtubeLikes} value={formatCount(marker.youtube.likeCount)} />
             <Row label={t.details.duration} value={formatDuration(marker.youtube.durationSec)} />
           </>
         ) : (

@@ -123,7 +123,7 @@ Firebase SDK は `src/adapters/firebase/index.ts` から遅延 import し、初�
 ## ランキングの基準
 
 地域別・機器別の基準は Loca の登録件数（`src/core/logic/ranking.ts`）。再生数は合計しない（規約 III.E.2・III.E.4.h。ADR 0038）。公式の紹介は数えない。
-再生数・動画の投稿日・長さは、毎晩 Actions が YouTube Data API で取って markers.json に入れる（ADR 0017）。再生数は動画の詳細に出すだけ。
+再生数・動画の投稿日・長さは、毎晩 Actions が YouTube Data API で取って markers.json に入れる（ADR 0017）。再生数と高評価数は動画の詳細に出すだけで、Loca の情報と分かる明示を添える（規約 III.E.4.h。ADR 0038 の追記）。
 ブラウザは YouTube Data API を呼ばない（登録時の題名などは oEmbed。サイトの経路の API キーは Actions の Secrets だけ。地域の調査のスクリプト用は ADR 0017 の追記）。
 
 | 項目 | 現在 |
